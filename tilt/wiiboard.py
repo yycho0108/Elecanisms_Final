@@ -37,6 +37,8 @@ class EventProcessor:
         self.done = False
         self._measureCnt = 0
         self._events = range(WEIGHT_SAMPLES)
+        self.t_x = 0
+        self.t_y = 0
 
     def mass(self, event):
         if (event.totalWeight > 2):
@@ -57,7 +59,8 @@ class EventProcessor:
                 t_x = - np.arctan(((bl+br) - (tl+tr)) * np.tan(t_max)) # bottom - top, desired tilt pos about x axis
                 t_y = - np.arctan(((tr+br) - (tl+bl)) * np.tan(t_max)) # right - left, desired tilt pos about y axis
                 t_x, t_y = np.rad2deg(t_x), np.rad2deg(t_y)
-                print '{0:.2f};{1:.2f}'.format(t_x, t_y) # computed tilt values
+                self.t_x, self.t_y = t_x, t_y
+                #print '{0:.2f};{1:.2f}'.format(t_x, t_y) # computed tilt values
             if not self._measured:
                 self._measured = True
 
@@ -159,6 +162,11 @@ class Wiiboard:
                 self.processor.mass(self.createBoardEvent(data[2:12]))
             else:
                 print "ACK to data write received"
+    def async_receive(self):
+        # board daemon
+        t = threading.Thread(target=self.receive)
+        t.daemon = True
+        t.start()
 
     def disconnect(self):
         if self.status == "Connected":
@@ -296,15 +304,16 @@ def main():
     print "Trying to connect..."
     board.connect()  # The wii board must be in sync mode at this time
     board.wait(200)
+
     # Flash the LED so we know we can step on.
     board.setLight(False)
     board.wait(500)
     board.setLight(True)
-    board.receive()
+    board.async_receive()
 
-    #t = threading.Thread(target=board.receive, args = (,))
-    #t.daemon = True
-    #t.start()
+    while True:
+        print '{0:.2f};{1:.2f}'.format(processor.t_x, processor.t_y) # computed tilt values
+        time.sleep(0.25)
 
 if __name__ == "__main__":
     main()

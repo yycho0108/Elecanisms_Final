@@ -24,15 +24,14 @@ env.Program('tilt', [
 		'tilt.c',
 		'descriptors.c',
 		'../lib/common.c',
+		'../lib/usb.c',
+		'../lib/usb2.c',
 		'../lib/timer.c',
 		'../lib/ui.c',
 		'../lib/pin.c',
 		'../lib/oc.c',
 		'../lib/spi.c',
-		'../lib/motor.c',
-		'../lib/encoder.c',
-		'../lib/usb.c',
-		'../lib/usb2.c'
+		'../lib/uart.c'
 ])
 
 print('Creating builder to load hex file via bootloader...')
