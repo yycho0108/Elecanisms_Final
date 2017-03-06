@@ -1,5 +1,7 @@
 #include <p24FJ128GB206.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <math.h>
 #include "config.h"
 #include "common.h"
 #include "usb.h"
@@ -17,6 +19,9 @@
 #define SERVO_2_OFFSET 9.5
 #define cap(mn,x,mx) ((mx)<(x))?(mx):((mn)>(x))?(mn):(x)
 
+_PIN *servo_x = &D[1];
+_PIN *servo_y = &D[0];
+
 // SERVO_OFFSET defines offset from "horizontal"
 
 // HS805BB Datasheet : https://www.servocity.com/hs-805bb-servo 
@@ -24,6 +29,11 @@
 // PWM Range : 556-2420 us
 // THUS 660-2340 maps to approx. -90 - 90 deg.
  
+struct angles {
+  double x;
+  double y;
+};
+
 uint16_t calc_servo_pos(float deg){
 	deg = cap(-90,deg,90);
 	deg = deg * 0.9;
@@ -31,6 +41,37 @@ uint16_t calc_servo_pos(float deg){
 	/*Takes servo position between -90 and 90
 	  Returns 16 bit fixed point fraction between 0 and 1*/
 }
+
+struct angles accelerometer_calc(void){
+  //Call accelerometer_get (Meba is writing that function, will output array of accels)
+  // Will output x_accel and y_accel in array
+  double x_accel = 1;
+  double y_accel = 1;
+  double x_angle;
+  x_angle = asin(x_accel/9.8);
+  double y_angle ;
+  y_angle = asin(y_accel/9.8);
+  struct angles angle_struct;
+  angle_struct.x = x_angle;
+  angle_struct.y = y_angle;
+  return angle_struct;
+
+}
+
+void servoStartup(void){
+  float initial_min = 660e-6;
+  float initial_max = 2340e-6;
+  oc_servo(&oc2, servo_x, &timer2, 20e-3, initial_min, initial_max, calc_servo_pos(0));
+  oc_servo(&oc1, servo_y, &timer1, 20e-3, initial_min, initial_max, calc_servo_pos(0));
+
+  struct angles zeroing;
+  zeroing = accelerometer_calc();
+}
+
+
+
+
+
 
 uint8_t string[40];
 
@@ -71,6 +112,8 @@ void registerUSBEvents(){
 	registerUSBEvent(toggle_led, TOGGLE_LED);
 }
 
+
+
 int16_t main(void) {
 	init_clock();
 
@@ -82,14 +125,12 @@ int16_t main(void) {
 
 	init_uart();
 
-	_PIN *servo_x = &D[1];
-	_PIN *servo_y = &D[0];
+
 
 	_PIN *pot_read_1 = &A[0];
 	_PIN *pot_read_2 = &A[1];
 
-	oc_servo(&oc2, servo_x, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
-	oc_servo(&oc1, servo_y, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+  servoStartup();
 
 
     led_on(&led1);
