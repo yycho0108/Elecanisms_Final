@@ -341,7 +341,7 @@ class mputest:
 
     def mpu_read_accel(self):
         values = self.mpu_readRegs(self.MPU_ACCEL_XOUT_H, 6)
-
+        print("what we read from readRegs is ", values)
         x = 256*values[0] + values[1]
         y = 256*values[2] + values[3]
         z = 256*values[4] + values[5]
@@ -395,3 +395,6 @@ class mputest:
 
         return [float(x)*self.mag_x_mult, float(y)*self.mag_y_mult, float(z)*self.mag_z_mult]
 
+if __name__ == "__main__":
+    Test = mputest()
+    print(Test.mpu_read_accel())

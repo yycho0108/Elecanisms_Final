@@ -58,12 +58,14 @@ void mpu_readRegs(uint8_t address, uint8_t *buffer, uint8_t n) {
     uint8_t i;
 
     if (address+n<=0x7E) {
+        led_on(&led1);
         pin_clear(CSN);
         spi_transfer(&spi1, 0x80|address);
         for (i = 0; i<n; i++)
             buffer[i] = spi_transfer(&spi1, 0);
         pin_set(CSN);
     } else {
+      led_on(&led2)
         for (i = 0; i<n; i++)
             buffer[i] = 0xFF;
     }
