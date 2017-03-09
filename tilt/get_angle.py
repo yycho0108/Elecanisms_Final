@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 h_0 = 5.32 # height of pivot point
 
