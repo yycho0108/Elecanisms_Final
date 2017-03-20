@@ -7,6 +7,8 @@ env = Environment(tools = ['gcc', 'gnulink', 'ar', 'zip'],
                   LINKFLAGS = '-omf=elf -mcpu=$PIC -Wl,--script="app_p24FJ128GB206.gld"',
                   CPPPATH = '../lib')
 env.PrependENVPath('PATH', 'C:\\Program Files (x86)\\Microchip\\xc16\\v1.30\\bin')
+env.PrependENVPath('PATH', '/Applications/microchip/xc16/v1.30/bin')
+env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.30/bin')
 bin2hex = Builder(action = 'xc16-bin2hex $SOURCE -omf=elf',
                   suffix = 'hex',
                   src_suffix = 'elf')
