@@ -28,9 +28,6 @@
 #include "int.h"
 #include "ui.h"
 
-#define INT_RISING 1
-#define INT_FALLING 0 // backwards
-
 _INT int1, int2, int3, int4;
 
 void int_serviceInterrupt(_INT *self) {

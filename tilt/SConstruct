@@ -29,6 +29,7 @@ env.Program('tilt', [
 		'../lib/timer.c',
 		'../lib/ui.c',
 		'../lib/pin.c',
+		'../lib/int.c',
 		'../lib/oc.c',
 		'../lib/spi.c',
 		'../lib/uart.c'

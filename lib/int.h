@@ -29,6 +29,9 @@
 #include <stdint.h>
 #include "pin.h"
 
+#define INT_RISING 1
+#define INT_FALLING 0 // backwards
+
 void init_int(void);
 
 typedef struct _INT {
