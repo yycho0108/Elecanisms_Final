@@ -58,16 +58,18 @@ void mpu_readRegs(uint8_t address, uint8_t *buffer, uint8_t n) {
     uint8_t i;
 
     if (address+n<=0x7E) {
-        led_on(&led1);
-        pin_clear(CSN);
+        led_toggle(&led2);
+        pin_clear(CSN); // select
         spi_transfer(&spi1, 0x80|address);
         for (i = 0; i<n; i++)
             buffer[i] = spi_transfer(&spi1, 0);
+            //buffer[i] = i+1;
         pin_set(CSN);
     } else {
-      led_on(&led2)
-        for (i = 0; i<n; i++)
+        led_toggle(&led3);
+        for (i = 0; i<n; i++){
             buffer[i] = 0xFF;
+          }
     }
 }
 
@@ -165,12 +167,16 @@ int16_t main(void) {
     init_spi();
 
     SCK = &D[11];
-    MISO = &D[13];
+    MISO = &D[7];
     MOSI = &D[12];
-    INT = &D[9];
+    //INT = &D[9];
     CSN = &D[10];
-
+    led_toggle(&led1);
     pin_digitalOut(CSN);
+    pin_digitalOut(MOSI);
+    pin_digitalIn(MISO);
+    pin_digitalOut(SCK);
+
     pin_set(CSN);
 
     spi_open(&spi1, MISO, MOSI, SCK, 1e6, 0);

@@ -122,8 +122,8 @@ class mputest:
         self.MPU_ZA_OFFSET_H = 0x7D
         self.MPU_ZA_OFFSET_L = 0x7E
 
-# The MPU-9250's magnetometer is on a separate die within the package that 
-# is made by a different manufacturer, Asahi Kasei Microdevices (AKM), part 
+# The MPU-9250's magnetometer is on a separate die within the package that
+# is made by a different manufacturer, Asahi Kasei Microdevices (AKM), part
 # number AK8963.  The MPU-9250 communicates with the AK8963 via I2C as a
 # slave device at I2C address 0x0C.
         self.MAG_I2C_ADDR = 0x0C
@@ -341,10 +341,12 @@ class mputest:
 
     def mpu_read_accel(self):
         values = self.mpu_readRegs(self.MPU_ACCEL_XOUT_H, 6)
-        print("what we read from readRegs is ", values)
+        print values
         x = 256*values[0] + values[1]
         y = 256*values[2] + values[3]
         z = 256*values[4] + values[5]
+
+        print x,y,z
 
         x = x - 65536 if x>32767 else x
         y = y - 65536 if y>32767 else y
@@ -394,7 +396,3 @@ class mputest:
         z = z - 65536 if z>32767 else z
 
         return [float(x)*self.mag_x_mult, float(y)*self.mag_y_mult, float(z)*self.mag_z_mult]
-
-if __name__ == "__main__":
-    Test = mputest()
-    print(Test.mpu_read_accel())
