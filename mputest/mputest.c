@@ -167,7 +167,7 @@ int16_t main(void) {
     init_spi();
 
     SCK = &D[11];
-    MISO = &D[7];
+    MISO = &D[13];
     MOSI = &D[12];
     //INT = &D[9];
     CSN = &D[10];
