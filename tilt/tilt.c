@@ -21,6 +21,20 @@
 #define SERVO_Y_PIN &D[0]
 #define SERVO_X_PIN &D[1]
 #define COIN_PIN &D[2]
+#define LIMIT_PIN 0
+
+#define WAITFORCOIN 1
+#define SETUP 2
+#define RUN 3
+#define END 4
+uint8_t state = 0;
+
+
+	_PIN *servo_y = SERVO_Y_PIN;
+	_PIN *servo_x = SERVO_X_PIN;
+	_PIN *coin_pin = COIN_PIN;
+  uint8_t game_on = 1;
+
 
 // SERVO_OFFSET defines offset from "horizontal"
 
@@ -79,6 +93,58 @@ void coin_inserted(){
 	led_toggle(&led3);
 }
 
+void waitforcoin(void){
+  if(coin_inserted){
+    state = SETUP;
+  }
+}
+void setup(void){
+  // ServiceUSB();
+  // Get angle from accelerometer
+  // If further than some threshold:
+  //    Move servos, keep track of PWM for it.
+  // Else If closer than threshold
+  //    shut down servos, 
+  //    set up servo with new 0.
+        state = RUN;
+}
+void do_balance(void){
+  ServiceUSB();
+  //s_x = pin_read(pot_read_1)/65535. - 0.5;
+  //s_y = pin_read(pot_read_2)/65535. - 0.5;
+  //s_x *= 180; //map to degrees
+  //s_y *= 180;
+  
+  pin_write(servo_x, calc_servo_pos(s_x));
+  pin_write(servo_y, calc_servo_pos(s_y)); //account for offset
+
+  //}else{
+  //	printf("[ERROR]! : %s\n", string);
+  //}
+  
+  if(timer_flag(&timer3)){
+    timer_lower(&timer3);
+          led_toggle(&led1);
+
+    printf("s_x : %f, s_y : %f\n", s_x, s_y);
+
+    //printf("s_x : %u, s_y : %u\n", calc_servo_pos(s_x), calc_servo_pos(s_y));
+    //printf("coin : %d", pin_read(coin_pin));
+  }
+}
+void do_obstacles(void){
+  // Handle the obstacles for P2
+}
+
+void run(void){
+  do_balance();
+  do_obstacles();
+  if (LIMIT_PIN > 0){ //Actually going to be pin_get for limit switch pin or something.
+    state = END;
+  }
+}
+
+
 int16_t main(void) {
 	init_clock();
 	init_ui();
@@ -89,9 +155,7 @@ int16_t main(void) {
 	init_timer();
 	init_uart();
 
-	_PIN *servo_y = SERVO_Y_PIN;
-	_PIN *servo_x = SERVO_X_PIN;
-	_PIN *coin_pin = COIN_PIN;
+  
 
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
@@ -101,6 +165,7 @@ int16_t main(void) {
 
     pin_digitalIn(coin_pin);
     int_attach(&int1, coin_pin, INT_FALLING, &coin_inserted);
+
 
     led_on(&led1);
 	led_on(&led2);
@@ -115,29 +180,18 @@ int16_t main(void) {
 		ServiceUSB();
 	}
 
-	while(1){
-		ServiceUSB();
-
-		//s_x = pin_read(pot_read_1)/65535. - 0.5;
-		//s_y = pin_read(pot_read_2)/65535. - 0.5;
-		//s_x *= 180; //map to degrees
-		//s_y *= 180;
-		
-		pin_write(servo_x, calc_servo_pos(s_x));
-		pin_write(servo_y, calc_servo_pos(s_y)); //account for offset
-
-		//}else{
-		//	printf("[ERROR]! : %s\n", string);
-		//}
-		
-		if(timer_flag(&timer3)){
-			timer_lower(&timer3);
-            led_toggle(&led1);
-
-			printf("s_x : %f, s_y : %f\n", s_x, s_y);
-
-			//printf("s_x : %u, s_y : %u\n", calc_servo_pos(s_x), calc_servo_pos(s_y));
-			//printf("coin : %d", pin_read(coin_pin));
-		}
+	while(game_on){
+    if(state == WAITFORCOIN){
+      waitforcoin();
+    }
+    else if (state == SETUP){
+      setup();
+    }
+    else if (state == RUN){
+      run();
+    }
+		else if (state == END){
+      game_on = 0;
+    }
 	}
 }
