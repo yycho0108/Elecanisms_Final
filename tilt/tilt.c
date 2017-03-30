@@ -20,7 +20,11 @@
 
 #define SERVO_Y_PIN &D[0]
 #define SERVO_X_PIN &D[1]
+
 #define COIN_PIN &D[2]
+
+#define LIN_ACC_PINA &D[3]
+#define LIN_ACC_PINB &D[4]
 
 // SERVO_OFFSET defines offset from "horizontal"
 
@@ -93,6 +97,9 @@ int16_t main(void) {
 	_PIN *servo_x = SERVO_X_PIN;
 	_PIN *coin_pin = COIN_PIN;
 
+	_PIN *lin_acc_a = LIN_ACC_PINA;
+	_PIN *lin_acc_b = LIN_ACC_PINB;
+
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
 
@@ -101,6 +108,14 @@ int16_t main(void) {
 
     pin_digitalIn(coin_pin);
     int_attach(&int1, coin_pin, INT_FALLING, &coin_inserted);
+
+	pin_digitalOut(lin_acc_a);
+	pin_digitalOut(lin_acc_b);
+
+	pin_write(lin_acc_a, 1);
+	pin_write(lin_acc_b, 0);
+
+	int lin_acc_pos = 1;
 
     led_on(&led1);
 	led_on(&led2);
@@ -130,11 +145,21 @@ int16_t main(void) {
 		//	printf("[ERROR]! : %s\n", string);
 		//}
 		
+
 		if(timer_flag(&timer3)){
+			lin_acc_pos = !lin_acc_pos;
+
+			pin_toggle(lin_acc_a);
+			pin_toggle(lin_acc_b);
+
+			//pin_write(lin_acc_a, lin_acc_pos?1:0);
+			//pin_write(lin_acc_b, lin_acc_pos?0:1);
+
 			timer_lower(&timer3);
             led_toggle(&led1);
 
 			printf("s_x : %f, s_y : %f\n", s_x, s_y);
+			printf("pos : %d\n", lin_acc_pos);
 
 			//printf("s_x : %u, s_y : %u\n", calc_servo_pos(s_x), calc_servo_pos(s_y));
 			//printf("coin : %d", pin_read(coin_pin));
