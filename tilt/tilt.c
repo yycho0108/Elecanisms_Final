@@ -29,13 +29,15 @@
 #define C_SERVO_PIN &D[5]
 
 #define END_PIN &D[6]
+#define START_PIN &D[7]
 
 #define LIMIT_PIN 0
 
 #define WAIT_COIN 1
 #define SETUP 2
 #define RUN 3
-#define END 4
+#define WAIT_PLAYERS 4
+#define END 5
 
 #define true 1
 #define false 0
@@ -95,8 +97,12 @@ void registerUSBEvents(){
 	registerUSBEvent(toggle_led, TOGGLE_LED);
 }
 
+
+//INTERRUPT FUNCTIONS
 volatile bool coin = false;
 volatile bool endlimit = false;
+volatile bool player2ready = false;
+
 
 void coin_inserted(){
 	//printf("COIN INSERTED!!\n");
@@ -109,7 +115,12 @@ void end_reached(){
 	led_toggle(&led2);
 }
 
+void player_ready(){
+	player2ready = true;
+	led_toggle(&led1);
+}
 
+//State machine helper functions
 void do_balance(void){
 	// TODO : account for offset
 	ServiceUSB();
@@ -120,16 +131,20 @@ void do_balance(void){
 void do_obstacles(void){
 	// Handle the obstacles for P2
 }
+
+void print_lcd(char *stuff_to_display){
+}
+
+
+//State machine main functions
 void waitforcoin(void){
-	while(!coin){
-		if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
-			timer_lower(&timer3);
-			led_toggle(&led1);
-			if(coin){
-				state = SETUP;
-				return;
-			}
+	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
+		timer_lower(&timer3);
+		led_toggle(&led1);
 		}
+	if(coin){
+		state = SETUP;
+		return;
 	}
 }
 
@@ -142,7 +157,18 @@ void setup(void){
 	//    shut down servos, 
 	//    set up servo with new 0.
 	do_balance();
-	state = RUN;
+	state = WAIT_PLAYERS;
+}
+
+void wait_players(void){
+	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
+		timer_lower(&timer3);
+		led_toggle(&led2);
+		}
+	if (player2ready){
+		state = RUN;
+		return;
+	}
 }
 
 void run(void){
@@ -176,36 +202,44 @@ int16_t main(void) {
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
-	int_attach(&int2, END_PIN, INT_RISING, &end_reached);
+	pin_digitalIn(END_PIN);
+	int_attach(&int2, END_PIN, INT_FALLING, &end_reached);
+	pin_digitalIn(START_PIN);
+	int_attach(&int3, START_PIN, INT_FALLING, &player_ready);
 
 	led_on(&led1);
-	led_on(&led2);
+	// led_on(&led2);
 
 	timer_setPeriod(&timer3, 0.5);
 	timer_start(&timer3);
 
 	registerUSBEvents();
-
+	
 	InitUSB();
 	while (USB_USWSTAT!=CONFIG_STATE) {     // while the peripheral is not configured...
 		ServiceUSB();
 	}
 
 	bool game_on = true;
-
+  state = WAIT_COIN;
+	//int counter = 0;
 	while(game_on){
+		//printf("[%d : %d]\n", state, ++counter);
 		if(state == WAIT_COIN){
 			waitforcoin();
 		}
 		else if (state == SETUP){
 			setup();
 		}
+		else if (state == WAIT_PLAYERS){
+			wait_players();
+		}
 		else if (state == RUN){
 			run();
 		}
 		else if (state == END){
 			end();
-			game_on = false;
+			// game_on = false;
 			// exit main loop
 		}
 	}
