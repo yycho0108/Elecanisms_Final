@@ -31,14 +31,15 @@
 
 #define END_PIN &D[6]
 #define START_PIN &D[7]
+#define BALL_START_PIN &D[8]
 
 #define LIMIT_PIN 0
 
-#define WAIT_COIN 1
-#define SETUP 2
-#define RUN 3
-#define WAIT_PLAYERS 4
-#define END 5
+#define WAIT_COIN 0
+#define SETUP 1
+#define RUN 2
+#define WAIT_PLAYERS 3
+#define END 4
 
 #define true 1
 #define false 0
@@ -104,7 +105,7 @@ void registerUSBEvents(){
 volatile bool coin = false;
 volatile bool endlimit = false;
 volatile bool player2ready = false;
-
+volatile bool ballinplace = false;
 
 void coin_inserted(){
 	//printf("COIN INSERTED!!\n");
@@ -120,6 +121,11 @@ void end_reached(){
 void player_ready(){
 	player2ready = true;
 	led_toggle(&led1);
+}
+
+void ball_ready(){
+	ballinplace = true;
+	led_toggle(&led2);
 }
 
 //State machine helper functions
@@ -162,14 +168,28 @@ void setup(void){
 	state = WAIT_PLAYERS;
 }
 
+volatile bool startgame_flag = false;
+
 void wait_players(void){
+	startgame_flag = true;
 	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
 		timer_lower(&timer3);
 		led_toggle(&led2);
 		}
-	if (player2ready){
+
+	// Check for ball in start
+	if (!ballinplace){
+		startgame_flag = false;
+		print_lcd("Place ball at start");
+	}
+	// Check for player 2 ready
+	else if (!player2ready){
+		print_lcd("Player 2:  Press START button when ready.");
+		startgame_flag = false;
+	}
+
+	if (startgame_flag){
 		state = RUN;
-		return;
 	}
 }
 
@@ -196,8 +216,8 @@ int16_t main(void) {
 	init_uart();
 
 
-	_PIN *lin_acc_a = LIN_ACC_PINA;
-	_PIN *lin_acc_b = LIN_ACC_PINB;
+	// _PIN *lin_acc_a = LIN_ACC_PINA;
+	// _PIN *lin_acc_b = LIN_ACC_PINB;
 
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
@@ -211,6 +231,9 @@ int16_t main(void) {
 	int_attach(&int2, END_PIN, INT_FALLING, &end_reached);
 	pin_digitalIn(START_PIN);
 	int_attach(&int3, START_PIN, INT_FALLING, &player_ready);
+	pin_digitalIn(BALL_START_PIN);
+	int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
+
 
 
 	led_on(&led1);
