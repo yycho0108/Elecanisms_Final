@@ -28,6 +28,8 @@
 // center rotary wall
 #define C_SERVO_PIN &D[5]
 
+#define END_PIN &D[6]
+
 #define LIMIT_PIN 0
 
 #define WAIT_COIN 1
@@ -35,6 +37,10 @@
 #define RUN 3
 #define END 4
 
+#define true 1
+#define false 0
+
+typedef unsigned char bool;
 uint8_t state = 0;
 
 // SERVO_OFFSET defines offset from "horizontal"
@@ -90,6 +96,7 @@ void registerUSBEvents(){
 }
 
 volatile bool coin = false;
+volatile bool endlimit = false;
 
 void coin_inserted(){
 	//printf("COIN INSERTED!!\n");
@@ -97,7 +104,10 @@ void coin_inserted(){
 	led_toggle(&led3);
 }
 
-
+void end_reached(){
+	endlimit = true;
+	led_toggle(&led2);
+}
 
 
 void do_balance(void){
@@ -138,7 +148,7 @@ void setup(void){
 void run(void){
 	do_obstacles();
 	//TODO : also account for time limit
-	if (LIMIT_PIN > 0){ //Actually going to be pin_get for limit switch pin or something.
+	if (endlimit == true){ //Actually going to be pin_get for limit switch pin or something.
 		state = END;
 	}
 }
@@ -161,12 +171,12 @@ int16_t main(void) {
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
 
-	oc_servo(&oc2, servo_x, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
-	oc_servo(&oc1, servo_y, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc2, X_SERVO_PIN, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
-
+	int_attach(&int2, END_PIN, INT_RISING, &end_reached);
 
 	led_on(&led1);
 	led_on(&led2);
