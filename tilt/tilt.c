@@ -16,6 +16,7 @@
 
 #define cap(mn,x,mx) ((mx)<(x))?(mx):((mn)>(x))?(mn):(x)
 
+
 #define Y_SERVO_PIN &D[0]
 #define X_SERVO_PIN &D[1]
 
@@ -44,6 +45,7 @@
 
 typedef unsigned char bool;
 uint8_t state = 0;
+
 
 // SERVO_OFFSET defines offset from "horizontal"
 
@@ -194,6 +196,9 @@ int16_t main(void) {
 	init_uart();
 
 
+	_PIN *lin_acc_a = LIN_ACC_PINA;
+	_PIN *lin_acc_b = LIN_ACC_PINB;
+
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
 
@@ -207,8 +212,10 @@ int16_t main(void) {
 	pin_digitalIn(START_PIN);
 	int_attach(&int3, START_PIN, INT_FALLING, &player_ready);
 
+
 	led_on(&led1);
 	// led_on(&led2);
+
 
 	timer_setPeriod(&timer3, 0.5);
 	timer_start(&timer3);
@@ -241,6 +248,7 @@ int16_t main(void) {
 			end();
 			// game_on = false;
 			// exit main loop
+
 		}
 	}
 }
