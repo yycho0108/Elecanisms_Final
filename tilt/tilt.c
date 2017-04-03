@@ -14,27 +14,28 @@
 #include "uart.h"
 #include <stdio.h>
 
-#define SERVO_1_OFFSET 20.0
-#define SERVO_2_OFFSET 9.5
 #define cap(mn,x,mx) ((mx)<(x))?(mx):((mn)>(x))?(mn):(x)
 
-#define SERVO_Y_PIN &D[0]
-#define SERVO_X_PIN &D[1]
+#define Y_SERVO_PIN &D[0]
+#define X_SERVO_PIN &D[1]
+
 #define COIN_PIN &D[2]
+
+// servos for paddle
+#define L_SERVO_PIN &D[3]
+#define R_SERVO_PIN &D[4]
+
+// center rotary wall
+#define C_SERVO_PIN &D[5]
+
 #define LIMIT_PIN 0
 
-#define WAITFORCOIN 1
+#define WAIT_COIN 1
 #define SETUP 2
 #define RUN 3
 #define END 4
+
 uint8_t state = 0;
-
-
-	_PIN *servo_y = SERVO_Y_PIN;
-	_PIN *servo_x = SERVO_X_PIN;
-	_PIN *coin_pin = COIN_PIN;
-  uint8_t game_on = 1;
-
 
 // SERVO_OFFSET defines offset from "horizontal"
 
@@ -42,7 +43,7 @@ uint8_t state = 0;
 // MAX TRAVEL : 199.5 deg.
 // PWM Range : 556-2420 us
 // THUS 660-2340 maps to approx. -90 - 90 deg.
- 
+
 uint16_t calc_servo_pos(float deg){
 	deg = cap(-90,deg,90);
 	deg = deg * 0.9;
@@ -88,62 +89,63 @@ void registerUSBEvents(){
 	registerUSBEvent(toggle_led, TOGGLE_LED);
 }
 
+volatile bool coin = false;
+
 void coin_inserted(){
-	printf("COIN INSERTED!!\n");
+	//printf("COIN INSERTED!!\n");
+	coin = true;
 	led_toggle(&led3);
 }
 
-void waitforcoin(void){
-  if(coin_inserted){
-    state = SETUP;
-  }
-}
-void setup(void){
-  // ServiceUSB();
-  // Get angle from accelerometer
-  // If further than some threshold:
-  //    Move servos, keep track of PWM for it.
-  // Else If closer than threshold
-  //    shut down servos, 
-  //    set up servo with new 0.
-        state = RUN;
-}
+
+
+
 void do_balance(void){
-  ServiceUSB();
-  //s_x = pin_read(pot_read_1)/65535. - 0.5;
-  //s_y = pin_read(pot_read_2)/65535. - 0.5;
-  //s_x *= 180; //map to degrees
-  //s_y *= 180;
-  
-  pin_write(servo_x, calc_servo_pos(s_x));
-  pin_write(servo_y, calc_servo_pos(s_y)); //account for offset
-
-  //}else{
-  //	printf("[ERROR]! : %s\n", string);
-  //}
-  
-  if(timer_flag(&timer3)){
-    timer_lower(&timer3);
-          led_toggle(&led1);
-
-    printf("s_x : %f, s_y : %f\n", s_x, s_y);
-
-    //printf("s_x : %u, s_y : %u\n", calc_servo_pos(s_x), calc_servo_pos(s_y));
-    //printf("coin : %d", pin_read(coin_pin));
-  }
+	// TODO : account for offset
+	ServiceUSB();
+	pin_write(X_SERVO_PIN, calc_servo_pos(0));
+	pin_write(Y_SERVO_PIN, calc_servo_pos(0));
 }
+
 void do_obstacles(void){
-  // Handle the obstacles for P2
+	// Handle the obstacles for P2
+}
+void waitforcoin(void){
+	while(!coin){
+		if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
+			timer_lower(&timer3);
+			led_toggle(&led1);
+			if(coin){
+				state = SETUP;
+				return;
+			}
+		}
+	}
+}
+
+void setup(void){
+	// ServiceUSB();
+	// Get angle from accelerometer
+	// If further than some threshold:
+	//    Move servos, keep track of PWM for it.
+	// Else If closer than threshold
+	//    shut down servos, 
+	//    set up servo with new 0.
+	do_balance();
+	state = RUN;
 }
 
 void run(void){
-  do_balance();
-  do_obstacles();
-  if (LIMIT_PIN > 0){ //Actually going to be pin_get for limit switch pin or something.
-    state = END;
-  }
+	do_obstacles();
+	//TODO : also account for time limit
+	if (LIMIT_PIN > 0){ //Actually going to be pin_get for limit switch pin or something.
+		state = END;
+	}
 }
 
+void end(void){
+	coin = false;
+}
 
 int16_t main(void) {
 	init_clock();
@@ -155,7 +157,6 @@ int16_t main(void) {
 	init_timer();
 	init_uart();
 
-  
 
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
@@ -163,15 +164,15 @@ int16_t main(void) {
 	oc_servo(&oc2, servo_x, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc1, servo_y, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
-    pin_digitalIn(coin_pin);
-    int_attach(&int1, coin_pin, INT_FALLING, &coin_inserted);
+	pin_digitalIn(COIN_PIN);
+	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
 
 
-    led_on(&led1);
+	led_on(&led1);
 	led_on(&led2);
 
-    timer_setPeriod(&timer3, 0.5);
-    timer_start(&timer3);
+	timer_setPeriod(&timer3, 0.5);
+	timer_start(&timer3);
 
 	registerUSBEvents();
 
@@ -180,18 +181,22 @@ int16_t main(void) {
 		ServiceUSB();
 	}
 
+	bool game_on = true;
+
 	while(game_on){
-    if(state == WAITFORCOIN){
-      waitforcoin();
-    }
-    else if (state == SETUP){
-      setup();
-    }
-    else if (state == RUN){
-      run();
-    }
+		if(state == WAIT_COIN){
+			waitforcoin();
+		}
+		else if (state == SETUP){
+			setup();
+		}
+		else if (state == RUN){
+			run();
+		}
 		else if (state == END){
-      game_on = 0;
-    }
+			end();
+			game_on = false;
+			// exit main loop
+		}
 	}
 }
