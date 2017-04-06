@@ -39,17 +39,14 @@
 #define L_READ_PIN &D[9]
 #define R_READ_PIN &D[10]
 #define END_PIN &D[11]
+#define ELECTRO_READ_PIN &D[12]
 
 #define C_READ_PIN &A[0]
-#define ELECTRO_READ_PIN &A[1]
+
 
 #define LIMIT_PIN 0
 
-#define WAIT_COIN 0
-#define SETUP 1
-#define RUN 2
-#define WAIT_PLAYERS 3
-#define END 4
+enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 
 #define true 1
 #define false 0
@@ -67,7 +64,7 @@ uint8_t state = 0;
 
 uint16_t calc_servo_pos(float deg){
 	deg = cap(-90,deg,90);
-	deg = deg * 0.9;
+	deg = deg * 0.3;
 	return (deg + 90) / 180 * 0xFFFF;
 	/*Takes servo position between -90 and 90
 	  Returns 16 bit fixed point fraction between 0 and 1*/
@@ -117,6 +114,7 @@ volatile bool endlimit = false;
 volatile bool player2ready = false;
 volatile bool ballinplace = false;
 volatile bool electromagnet_on = false;
+volatile bool startgame_flag = false;
 
 void coin_inserted(){
 	//printf("COIN INSERTED!!\n");
@@ -142,7 +140,6 @@ void ball_ready(){
 //State machine helper functions
 void do_balance(void){
 	// TODO : account for offset
-	ServiceUSB();
 	pin_write(X_SERVO_PIN, calc_servo_pos(0));
 	pin_write(Y_SERVO_PIN, calc_servo_pos(0));
 }
@@ -154,18 +151,18 @@ void center_ob(void){
 }
 
 void flipper_ob(void){
-	pin_write(L_SERVO_PIN, pin_read(L_READ_PIN));
-	pin_write(R_SERVO_PIN, 1 - pin_read(R_READ_PIN));
+	pin_write(L_SERVO_PIN, calc_servo_pos(pin_read(L_READ_PIN)*90));
+	pin_write(R_SERVO_PIN, calc_servo_pos((1 - pin_read(R_READ_PIN))*90));
 }
 
 void electromag_ob(void){
-	if (ELECTRO_READ_PIN){
-		if(timer_flag(&timer4)){ // check every 1 second as setup initially
-			timer_lower(&timer4);
-			if(electromagnet_on){
-				electromagnet_on = !electromagnet_on;
-				pin_write(ELECTRO_PIN,electromagnet_on);
-			}
+	if(timer_flag(&timer4)){ // check every 1 second
+		timer_lower(&timer4);
+		if(electromagnet_on || ELECTRO_READ_PIN){
+			//Turn off electromagnet
+			electromagnet_on = !electromagnet_on; 
+			pin_write(ELECTRO_PIN,electromagnet_on);
+			led_write(&led1,electromagnet_on);
 		}
 	}
 }
@@ -181,10 +178,8 @@ void do_obstacles(void){
 
 
 void do_wii(void){
-		ServiceUSB();
-
-		pin_write(X_SERVO_PIN, calc_servo_pos(s_x));
-		pin_write(X_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
+	pin_write(X_SERVO_PIN, calc_servo_pos(s_x));
+	pin_write(X_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
 
 }
 
@@ -197,9 +192,9 @@ void waitforcoin(void){
 	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
 		timer_lower(&timer3);
 		led_toggle(&led1);
-		}
+	}
 	if(coin){
-		state = SETUP;
+		state = SETUP_BOARD;
 		return;
 	}
 }
@@ -213,17 +208,18 @@ void setup(void){
 	//    shut down servos, 
 	//    set up servo with new 0.
 	do_balance();
+	startgame_flag = false;
 	state = WAIT_PLAYERS;
 }
 
-volatile bool startgame_flag = false;
+
 
 void wait_players(void){
 	startgame_flag = true;
 	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
 		timer_lower(&timer3);
 		led_toggle(&led2);
-		}
+	}
 
 	// Check for ball in start
 	if (!ballinplace){
@@ -271,9 +267,11 @@ int16_t main(void) {
 	//_PIN *pot_read_1 = &A[0];
 	//_PIN *pot_read_2 = &A[1];
 
-	oc_servo(&oc2, X_SERVO_PIN, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc2, X_SERVO_PIN, &timer1, 20e-3, 660e-6, 2300e-6, calc_servo_pos(0));
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
-	oc_servo(&oc1, C_SERVO_PIN, &timer4, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 900e-6, 2100e-6, calc_servo_pos(0));
+	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 900e-6, 2200e-6, calc_servo_pos(0));
+	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 900e-6, 2200e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
@@ -292,26 +290,27 @@ int16_t main(void) {
 
 	timer_setPeriod(&timer3, 0.5);
 	timer_start(&timer3);
-	
+
 	timer_setPeriod(&timer4, 1);
-    timer_start(&timer4);
+	timer_start(&timer4);
 
 	registerUSBEvents();
-	
+
 	InitUSB();
 	while (USB_USWSTAT!=CONFIG_STATE) {     // while the peripheral is not configured...
 		ServiceUSB();
 	}
 
 	bool game_on = true;
-  state = WAIT_COIN;
-	//int counter = 0;
+	state = SETUP_BOARD;
+	// int counter = 0;
 	while(game_on){
-		//printf("[%d : %d]\n", state, ++counter);
+		ServiceUSB();
+		printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
 		if(state == WAIT_COIN){
 			waitforcoin();
 		}
-		else if (state == SETUP){
+		else if (state == SETUP_BOARD){
 			setup();
 		}
 		else if (state == WAIT_PLAYERS){

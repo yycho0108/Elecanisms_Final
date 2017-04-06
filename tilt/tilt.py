@@ -17,14 +17,14 @@ def main():
     board = Wiiboard(processor)
 
     print "Trying to connect..."
-    board.connect()  # The wii board must be in sync mode at this time
+    #board.connect()  # The wii board must be in sync mode at this time
     board.wait(200)
 
     # Flash the LED so we know we can step on.
     board.setLight(False)
     board.wait(500)
     board.setLight(True)
-    board.async_receive()
+    #board.async_receive()
 
     ## Communicate via UART - debugging
     #with serial.Serial(

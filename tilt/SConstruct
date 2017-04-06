@@ -1,5 +1,5 @@
 #SConstruct
-do_load = False
+do_load = True
 
 
 env = Environment(PIC = '24FJ128GB206',
