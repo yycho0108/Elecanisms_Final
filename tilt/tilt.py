@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from wiiboard import Wiiboard, EventProcessor
 from pic_interface import PICInterface
 from get_angle import tilt2servo
@@ -17,14 +19,14 @@ def main():
     board = Wiiboard(processor)
 
     print "Trying to connect..."
-    #board.connect()  # The wii board must be in sync mode at this time
+    board.connect()  # The wii board must be in sync mode at this time
     board.wait(200)
 
     # Flash the LED so we know we can step on.
     board.setLight(False)
     board.wait(500)
     board.setLight(True)
-    #board.async_receive()
+    board.async_receive()
 
     ## Communicate via UART - debugging
     #with serial.Serial(
@@ -43,7 +45,7 @@ def main():
     while True:
         t_x, t_y = processor.t_x, processor.t_y # tilt angles
         #t_x, t_y = 0,10 # for testing
-        t_x, t_y = -t_y, t_x # this is flipped due to servo position
+        t_x, t_y = t_y, t_x # this is flipped due to servo position
         s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
 
         print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
