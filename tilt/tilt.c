@@ -29,9 +29,19 @@
 // center rotary wall
 #define C_SERVO_PIN &D[5]
 
-#define END_PIN &D[6]
+// Electromagnet control Pins
+#define ELECTRO_PIN &D[6]
+
+// Read Pins
+
 #define START_PIN &D[7]
 #define BALL_START_PIN &D[8]
+#define L_READ_PIN &D[9]
+#define R_READ_PIN &D[10]
+#define END_PIN &D[11]
+
+#define C_READ_PIN &A[0]
+#define ELECTRO_READ_PIN &A[1]
 
 #define LIMIT_PIN 0
 
@@ -106,6 +116,7 @@ volatile bool coin = false;
 volatile bool endlimit = false;
 volatile bool player2ready = false;
 volatile bool ballinplace = false;
+volatile bool electromagnet_on = false;
 
 void coin_inserted(){
 	//printf("COIN INSERTED!!\n");
@@ -136,8 +147,45 @@ void do_balance(void){
 	pin_write(Y_SERVO_PIN, calc_servo_pos(0));
 }
 
+void center_ob(void){
+	float c_pot = pin_read(C_READ_PIN)/65535. - 0.5;
+	c_pot *= 180;
+	pin_write(C_SERVO_PIN, calc_servo_pos(c_pot));
+}
+
+void flipper_ob(void){
+	pin_write(L_SERVO_PIN, pin_read(L_READ_PIN));
+	pin_write(R_SERVO_PIN, 1 - pin_read(R_READ_PIN));
+}
+
+void electromag_ob(void){
+	if (ELECTRO_READ_PIN){
+		if(timer_flag(&timer4)){ // check every 1 second as setup initially
+			timer_lower(&timer4);
+			if(electromagnet_on){
+				electromagnet_on = !electromagnet_on;
+				pin_write(ELECTRO_PIN,electromagnet_on);
+			}
+		}
+	}
+}
+
 void do_obstacles(void){
 	// Handle the obstacles for P2
+	flipper_ob();
+	center_ob();
+	electromag_ob();
+}
+
+
+
+
+void do_wii(void){
+		ServiceUSB();
+
+		pin_write(X_SERVO_PIN, calc_servo_pos(s_x));
+		pin_write(X_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
+
 }
 
 void print_lcd(char *stuff_to_display){
@@ -194,7 +242,8 @@ void wait_players(void){
 }
 
 void run(void){
-	do_obstacles();
+	do_obstacles(); // Handle player 2 stuff
+	do_wii(); // Handle player 1 balancing
 	//TODO : also account for time limit
 	if (endlimit == true){ //Actually going to be pin_get for limit switch pin or something.
 		state = END;
@@ -224,6 +273,7 @@ int16_t main(void) {
 
 	oc_servo(&oc2, X_SERVO_PIN, &timer2, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc1, C_SERVO_PIN, &timer4, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
@@ -234,7 +284,7 @@ int16_t main(void) {
 	pin_digitalIn(BALL_START_PIN);
 	int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
 
-
+	pin_analogIn(C_READ_PIN);
 
 	led_on(&led1);
 	// led_on(&led2);
@@ -242,6 +292,9 @@ int16_t main(void) {
 
 	timer_setPeriod(&timer3, 0.5);
 	timer_start(&timer3);
+	
+	timer_setPeriod(&timer4, 1);
+    timer_start(&timer4);
 
 	registerUSBEvents();
 	
