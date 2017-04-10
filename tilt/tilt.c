@@ -38,7 +38,7 @@
 #define L_READ_PIN &D[9]
 #define R_READ_PIN &D[10]
 #define END_PIN &D[11]
-#define ELECTRO_READ_PIN &D[12]
+#define ELECTRO_READ_PIN &D[13]
 
 #define C_READ_PIN &A[0]
 
@@ -50,11 +50,13 @@ enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 #define true 1
 #define false 0
 
+#define COOLDOWN_PER .25
+#define ELECTRO_ON_PER 1
+
 typedef unsigned char bool;
 uint8_t state = 0;
 
 volatile bool electromagnet_on = false;
-volatile bool electromagnet_cooldown = false;
 
 
 // SERVO_OFFSET defines offset from "horizontal"
@@ -130,7 +132,7 @@ void end_reached(){
 
 void player_ready(){
 	player2ready = true;
-	led_toggle(&led1);
+	// led_toggle(&led1);
 }
 
 void ball_ready(){
@@ -157,19 +159,26 @@ void flipper_ob(void){
 }
 
 void electromag_ob(void){
-	// if(timer_flag(&timer4)){ // check every 1 second
-	// 	timer_lower(&timer4);
-	// 	if(electromagnet_on){
-	// 		electromagnet_on = false;
-	// 	}
-	// 	else if(ELECTRO_READ_PIN){
-	// 		//Turn off electromagnet
-	// 		electromagnet_on = true;
-	// 	}
-	// 	pin_write(ELECTRO_PIN,electromagnet_on);
-	// 	led_write(&led1,electromagnet_on);
-	// 	}
-	// }
+	if(timer_flag(&timer4)){//wait for electromagnet to be supposed to turn off
+		//or for cooldown period to end
+		if (electromagnet_on){
+			timer_lower(&timer4);
+			//Turn off the electromagnet, then start cooldown
+			electromagnet_on = false;
+			timer_setPeriod(&timer4, COOLDOWN_PER);
+			timer_start(&timer4);
+		}
+		else if(pin_read(ELECTRO_READ_PIN)){
+			//Turn off electromagnet
+			timer_lower(&timer4);
+			timer_setPeriod(&timer4, ELECTRO_ON_PER);
+			timer_start(&timer4);
+			electromagnet_on = true;
+		}
+		pin_write(ELECTRO_PIN,electromagnet_on);
+		led_write(&led1,electromagnet_on);
+		led_write(&led2,pin_read(ELECTRO_READ_PIN));
+	}
 }
 
 void do_obstacles(void){
@@ -195,7 +204,7 @@ void print_lcd(char *stuff_to_display){
 void waitforcoin(void){
 	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
 		timer_lower(&timer3);
-		led_toggle(&led1);
+		// led_toggle(&led1);
 	}
 	if(coin){
 		state = SETUP_BOARD;
@@ -286,9 +295,12 @@ int16_t main(void) {
 	pin_digitalIn(BALL_START_PIN);
 	int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
 
+
+	pin_digitalIn(ELECTRO_READ_PIN);
+
 	pin_analogIn(C_READ_PIN);
 
-	led_on(&led1);
+	// led_on(&led1);
 	// led_on(&led2);
 
 
@@ -310,7 +322,7 @@ int16_t main(void) {
 	// int counter = 0;
 	while(game_on){
 		ServiceUSB();
-		//printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
+		// printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
 		switch(state){
 			case WAIT_COIN:
 				waitforcoin();
