@@ -16,9 +16,8 @@
 
 #define cap(mn,x,mx) ((mx)<(x))?(mx):((mn)>(x))?(mn):(x)
 
-
-#define Y_SERVO_PIN &D[0]
-#define X_SERVO_PIN &D[1]
+#define X_SERVO_PIN &D[0]
+#define Y_SERVO_PIN &D[1]
 
 #define COIN_PIN &D[2]
 
@@ -183,8 +182,7 @@ void do_obstacles(void){
 
 void do_wii(void){
 	pin_write(X_SERVO_PIN, calc_servo_pos(s_x));
-	pin_write(X_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
-
+	pin_write(Y_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
 }
 
 void print_lcd(char *stuff_to_display){
@@ -310,23 +308,25 @@ int16_t main(void) {
 	// int counter = 0;
 	while(game_on){
 		ServiceUSB();
-		printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
-		if(state == WAIT_COIN){
-			waitforcoin();
-		}
-		else if (state == SETUP_BOARD){
-			setup();
-		}
-		else if (state == WAIT_PLAYERS){
-			wait_players();
-		}
-		else if (state == RUN){
-			run();
-		}
-		else if (state == END){
-			end();
-			// game_on = false;
-			// exit main loop
+		//printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
+		switch(state){
+			case WAIT_COIN:
+				waitforcoin();
+				break;
+			case SETUP_BOARD:
+				setup();
+				break;
+			case WAIT_PLAYERS:
+				wait_players();
+				break;
+			case RUN:
+				run();
+				break;
+			case END:
+				end();
+				break;
+			default:
+				break;
 
 		}
 	}
