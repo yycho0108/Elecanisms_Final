@@ -64,7 +64,7 @@ uint8_t state = 0;
 
 uint16_t calc_servo_pos(float deg){
 	deg = cap(-90,deg,90);
-	deg = deg * 0.3;
+	// deg = deg;
 	return (deg + 90) / 180 * 0xFFFF;
 	/*Takes servo position between -90 and 90
 	  Returns 16 bit fixed point fraction between 0 and 1*/
@@ -124,7 +124,7 @@ void coin_inserted(){
 
 void end_reached(){
 	endlimit = true;
-	led_toggle(&led2);
+	led_toggle(&led3);
 }
 
 void player_ready(){
@@ -151,20 +151,24 @@ void center_ob(void){
 }
 
 void flipper_ob(void){
-	pin_write(L_SERVO_PIN, calc_servo_pos(pin_read(L_READ_PIN)*90));
-	pin_write(R_SERVO_PIN, calc_servo_pos((1 - pin_read(R_READ_PIN))*90));
+	pin_write(R_SERVO_PIN, calc_servo_pos(pin_read(L_READ_PIN)*90));
+	pin_write(L_SERVO_PIN, calc_servo_pos((1 - pin_read(R_READ_PIN))*90));
 }
 
 void electromag_ob(void){
-	if(timer_flag(&timer4)){ // check every 1 second
-		timer_lower(&timer4);
-		if(electromagnet_on || ELECTRO_READ_PIN){
-			//Turn off electromagnet
-			electromagnet_on = !electromagnet_on; 
-			pin_write(ELECTRO_PIN,electromagnet_on);
-			led_write(&led1,electromagnet_on);
-		}
-	}
+	// if(timer_flag(&timer4)){ // check every 1 second
+	// 	timer_lower(&timer4);
+	// 	if(electromagnet_on){
+	// 		electromagnet_on = false;
+	// 	}
+	// 	else if(ELECTRO_READ_PIN){
+	// 		//Turn off electromagnet
+	// 		electromagnet_on = true;
+	// 	}
+	// 	pin_write(ELECTRO_PIN,electromagnet_on);
+	// 	led_write(&led1,electromagnet_on);
+	// 	}
+	// }
 }
 
 void do_obstacles(void){
@@ -269,9 +273,9 @@ int16_t main(void) {
 
 	oc_servo(&oc2, X_SERVO_PIN, &timer1, 20e-3, 660e-6, 2300e-6, calc_servo_pos(0));
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
-	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 900e-6, 2100e-6, calc_servo_pos(0));
-	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 900e-6, 2200e-6, calc_servo_pos(0));
-	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 900e-6, 2200e-6, calc_servo_pos(0));
+	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
