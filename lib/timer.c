@@ -198,3 +198,20 @@ void timer_cancel(_TIMER *self) {
     self->after = NULL;
 }
 
+_TIMER *timerDelay;
+
+void timer_initDelayMicro(_TIMER *timer) {
+    timerDelay = timer;
+    timer_setPeriod(timerDelay, 1e-6);
+    timer_start(timerDelay);
+}
+
+void timer_delayMicro(uint16_t usec) {
+    uint16_t count = 0;
+    while (count < usec) {
+        if (timer_flag(timerDelay)) {
+            timer_lower(timerDelay);
+            count +=1;
+        }
+    }
+}

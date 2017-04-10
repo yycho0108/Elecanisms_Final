@@ -66,4 +66,8 @@ void timer_after(_TIMER *self, float delay, uint16_t num_times,
                  void (*callback)(_TIMER *self));
 void timer_cancel(_TIMER *self);
 
+extern _TIMER *timerDelay;
+void timer_initDelayMicro(_TIMER *timer);
+void timer_delayMicro(uint16_t usec);
+
 #endif
