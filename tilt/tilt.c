@@ -53,6 +53,9 @@ enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 typedef unsigned char bool;
 uint8_t state = 0;
 
+volatile bool electromagnet_on = false;
+volatile bool electromagnet_cooldown = false;
+
 
 // SERVO_OFFSET defines offset from "horizontal"
 
@@ -112,7 +115,6 @@ volatile bool coin = false;
 volatile bool endlimit = false;
 volatile bool player2ready = false;
 volatile bool ballinplace = false;
-volatile bool electromagnet_on = false;
 volatile bool startgame_flag = false;
 
 void coin_inserted(){
