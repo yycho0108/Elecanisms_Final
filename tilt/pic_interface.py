@@ -17,8 +17,21 @@ class PICInterface(object):
             raise ValueError('no USB device found matching idVendor = 0x6666 and idProduct = 0x0003')
         self.dev.set_configuration()
 
+        self.connected = True
+
+    def connect(self):
+        self.dev = usb.core.find(idVendor = 0x6666, idProduct = 0x0003)
+
+        if self.dev is None:
+            self.connected = False
+        else:
+            self.connected = True
+
+        return self.connected
+
     def close(self):
         self.dev = None
+        self.connected = False
 
     def toggle_led(self):
         try:
@@ -33,8 +46,10 @@ class PICInterface(object):
             x = cap(0.,x,1.) # limit
             x = np.uint16(x * 0xFFFF)
             self.dev.ctrl_transfer(0xC0, self.WRITE_X, 0, x, 0)
+            return True
         except usb.core.USBError as e:
             print "Could not send WRITE_X vendor request."
+            return False
 
     def write_y(self, y):
         try:
@@ -42,6 +57,8 @@ class PICInterface(object):
             y = cap(0.,y,1.) # limit
             y = np.uint16(y * 0xFFFF)
             self.dev.ctrl_transfer(0xC0, self.WRITE_Y, 0, y, 0)
+            return True
         except usb.core.USBError as e:
             print e
             print "Could not send WRITE_Y vendor request."
+            return False

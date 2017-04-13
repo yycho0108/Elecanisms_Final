@@ -43,14 +43,18 @@ def main():
     pic = PICInterface()
 
     while True:
-        t_x, t_y = processor.t_x, processor.t_y # tilt angles
-        #t_x, t_y = 0,10 # for testing
-        t_x, t_y = t_y, t_x # this is flipped due to servo position
-        s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
+        if pic.connected:
+            t_x, t_y = processor.t_x, processor.t_y # tilt angles
+            #t_x, t_y = 0,10 # for testing
+            t_x, t_y = t_y, t_x # this is flipped due to servo position
+            s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
 
-        print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
-        pic.write_x(s_x)
-        pic.write_y(s_y)
+            print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
+            if not (pic.write_x(s_x) and pic.write_y(s_y)):
+                pic.connected = False
+        else:
+            pic.connect()
+
         time.sleep(0.05)
 
     pic.close()
