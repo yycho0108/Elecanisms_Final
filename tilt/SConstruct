@@ -1,5 +1,5 @@
 #SConstruct
-do_load = True
+do_load = True 
 
 
 env = Environment(PIC = '24FJ128GB206',
@@ -33,7 +33,9 @@ env.Program('tilt', [
 		'../lib/int.c',
 		'../lib/oc.c',
 		'../lib/spi.c',
-		'../lib/uart.c'
+		'../lib/uart.c',
+		'../lib/i2c.c',
+		'../lib/lcd.c'
 ])
 
 print('Creating builder to load hex file via bootloader...')

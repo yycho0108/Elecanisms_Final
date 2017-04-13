@@ -1,6 +1,7 @@
 #include <p24FJ128GB206.h>
 
 #include "common.h"
+#include "i2c.h"
 #include "lcd.h"
 #include "timer.h"
 #include "ui.h"
@@ -92,9 +93,22 @@ void __lcd_send8(_LCD *self, uint8_t value, uint8_t command) {
 
 
 void init_lcd() {
-    __lcd_i2c = &i2c1; // D8/D9
+
+
+    i2c_init(&i2c1, (uint16_t *)&I2C1RCV, (uint16_t *)&I2C1TRN, 
+             (uint16_t *)&I2C1BRG, (uint16_t *)&I2C1CON, 
+             (uint16_t *)&I2C1STAT, (uint16_t *)&I2C1ADD, 
+             (uint16_t *)&I2C1MSK, (uint16_t *)&IFS1, 1, 
+             &D[8], &D[9]); //SDL-SCA
+
+	timer_initDelayMicro(&timer5);
+
+    __lcd_i2c = &i2c1; // D8,D9
+
     i2c_open(__lcd_i2c, 1e3); // freq = 1e3
+
 	lcd_init(&lcd[0], 0x07, 'A');
+
 
     //switch (initiator) {
     //    case 0: // Central
@@ -252,37 +266,55 @@ void lcd_print2(_LCD *self, char* line1, char* line2){
     lcd_print1(self,strptr);
 }
 
-void lcd_print(_LCD *self, char* message) {
-    char newstr1[17] = "                ";
-    char* newstrptr1= newstr1;
-    char newstr2[17] = "                ";
-    char* newstrptr2= newstr2;
-    char* temp1 = newstrptr1;
-    char* temp2 = newstrptr2;
-    uint8_t i=0;
-    while (i <17){
-        if (*message){
-            *newstrptr1=*message;
-            message++;
-            newstrptr1++;
-        }
-        i++;
-    }
-    i=0;
-    message--; //SKETCHY!
-    while (i <17){
-        if (*message){
-            *newstrptr2=*message;
-            message++;
-            newstrptr2++;
-        }
-        i++;
-    }
-    lcd_print2(self, temp1, temp2);
+uint8_t str_len(char* s){
+	int cnt = 0;
+	while(*(s++)) 
+		++cnt;
+	return cnt;
+}
+
+char str_eq(char* s1, char* s2, int n){
+	uint8_t i;
+	for(i=0;i<n;++i){
+		if(s1[i] != s2[i])
+			return 0;
+	}
+	return 1;
+}
+
+void lcd_print(_LCD *self, char* msg) {
+	static char prev_msg[32] = {};
+	uint8_t i;
+	uint8_t n = str_len(msg);
+
+	if(str_eq(prev_msg,msg,n))
+		return;
+
+	for(i=0;i<n;++i){
+		prev_msg[i] = msg[i];
+	}
+
+	lcd_clear(self);
+
+	char msg1[17] = "                ";
+	char msg2[17] = "                ";
+
+
+	for(i=0; i<n; ++i){
+		if(i >= 16)
+			msg2[i-16] = msg[i];
+		else
+			msg1[i] = msg[i];
+	}
+
+	msg1[16] = '\0';
+	msg2[16] = '\0';
+
+	lcd_print2(self, msg1, msg2);
 }
 
 void lcd_broadcast(char* message) {
-    uint8_t i;
-    for (i = 0; i < 3; i++)
-        lcd_print(&lcd[i], message);
+	uint8_t i;
+	for (i = 0; i < 3; i++)
+		lcd_print(&lcd[i], message);
 }

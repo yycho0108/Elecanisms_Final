@@ -17,7 +17,7 @@ int16_t main(void) {
     init_clock();
     init_ui();
     init_pin();
-    init_i2c();
+    //init_i2c();
     init_timer();
     timer_initDelayMicro(&timer5);
 	led_off(&led2);
