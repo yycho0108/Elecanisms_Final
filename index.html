@@ -13,9 +13,19 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<script src="assets/js/jquery.min.js"></script>
+		<script>
+			$(function(){
+				$.get("menu.html", function(data){
+					$("#div-menu").replaceWith(data);
+				});
+			});
+		</script>
 	</head>
 	<body>
-
+	<!-- Menu -->
+	<div id="div-menu">
+	</div>
 		<!-- Wrapper -->
 			<div id="wrapper">
 
@@ -27,19 +37,6 @@
 						</nav>
 					</header>
 
-				<!-- Menu -->
-					<nav id="menu">
-						<ul class="links">
-							<li><a href="index.html">Home</a></li>
-							<li><a href="landing.html">Landing</a></li>
-							<li><a href="generic.html">Generic</a></li>
-							<li><a href="elements.html">Elements</a></li>
-						</ul>
-						<ul class="actions vertical">
-							<li><a href="#" class="button special fit">Get Started</a></li>
-							<li><a href="#" class="button fit">Log In</a></li>
-						</ul>
-					</nav>
 
 				<!-- Banner -->
 					<section id="banner" class="major">
@@ -66,7 +63,7 @@
 										<img src="images/pic01.jpg" alt="" />
 									</span>
 									<header class="major">
-										<h3><a href="landing.html" class="link">Introduction</a></h3>
+										<h3><a href="introduction.html" class="link">Introduction</a></h3>
 										<p>What is Tilt Game?</p>
 									</header>
 								</article>
@@ -202,7 +199,6 @@
 			</div>
 
 		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrolly.min.js"></script>
 			<script src="assets/js/jquery.scrollex.min.js"></script>
 			<script src="assets/js/skel.min.js"></script>
