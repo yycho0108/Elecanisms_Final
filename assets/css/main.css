@@ -2203,6 +2203,9 @@
 		.image img {
 			display: block;
 		}
+		.image iframe {
+			display : block
+		}
 
 		.image.left, .image.right {
 			max-width: 30%;
