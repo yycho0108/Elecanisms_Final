@@ -50,12 +50,13 @@ enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 #define true 1
 #define false 0
 
-#define COOLDOWN_PER .25
-#define ELECTRO_ON_PER 1
+#define COOLDOWN_PER 4
+#define ELECTRO_ON_PER 2
 
 typedef unsigned char bool;
 uint8_t state = 0;
-
+uint8_t electromag_counter=0;
+uint8_t electromag_counter_check = 0;
 volatile bool electromagnet_on = false;
 
 
@@ -161,19 +162,26 @@ void flipper_ob(void){
 void electromag_ob(void){
 	if(timer_flag(&timer4)){//wait for electromagnet to be supposed to turn off
 		//or for cooldown period to end
-		if (electromagnet_on){
-			timer_lower(&timer4);
-			//Turn off the electromagnet, then start cooldown
-			electromagnet_on = false;
-			timer_setPeriod(&timer4, COOLDOWN_PER);
-			timer_start(&timer4);
+		if electromag_counter >= electromag_counter_check{
+			electromag_counter = 0;
+			if (electromagnet_on){
+				timer_lower(&timer4);
+				//Turn off the electromagnet, then start cooldown
+				electromagnet_on = false;
+				electromag_counter_check = COOLDOWN_PER;
+				timer_start(&timer4);
+			}
+			else if(pin_read(ELECTRO_READ_PIN)){
+				//Turn off electromagnet
+				timer_lower(&timer4);
+				timer_setPeriod(&timer4, ELECTRO_ON_PER);
+				timer_start(&timer4);
+				electromagnet_on = true;
+			}
 		}
-		else if(pin_read(ELECTRO_READ_PIN)){
-			//Turn off electromagnet
+		else{
+			electromag_counter = electromag_counter+1;
 			timer_lower(&timer4);
-			timer_setPeriod(&timer4, ELECTRO_ON_PER);
-			timer_start(&timer4);
-			electromagnet_on = true;
 		}
 		pin_write(ELECTRO_PIN,electromagnet_on);
 		led_write(&led1,electromagnet_on);
