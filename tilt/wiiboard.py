@@ -85,7 +85,7 @@ class BoardEvent:
         self.totalWeight = topLeft + topRight + bottomLeft + bottomRight
 
 class Wiiboard:
-    def __init__(self, processor):
+    def __init__(self, processor, address=None):
         # Sockets and status
         self.receivesocket = None
         self.controlsocket = None
@@ -103,6 +103,7 @@ class Wiiboard:
 
         self.status = "Disconnected"
         self.lastEvent = BoardEvent(0, 0, 0, 0, False, False)
+        self.address = address
 
         try:
             self.receivesocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
@@ -110,26 +111,35 @@ class Wiiboard:
         except ValueError:
             raise Exception("Error: Bluetooth not found")
 
+    def __enter__(self):
+        self.connect(self.address)
+        return self
+
+    def __exit__(self, t,v,tb):
+        self.disconnect()
+
     def isConnected(self):
         return self.status == "Connected"
 
     # Connect to the Wiiboard at bluetooth address <address>
     def connect(self, address=None):
+        print 'connecting to : ', address
 
         if address is None:
             # auto discover
             address = self.discover()
-            try:
-                # Disconnect already-connected devices.
-                # This is basically Linux black magic just to get the thing to work.
-                subprocess.check_output(["bluez-test-input", "disconnect", address], stderr=subprocess.STDOUT)
-                subprocess.check_output(["bluez-test-input", "disconnect", address], stderr=subprocess.STDOUT)
-            except:
-                pass
+        try:
+            # Disconnect already-connected devices.
+            # This is basically Linux black magic just to get the thing to work.
+            subprocess.check_output(["bluez-test-input", "disconnect", address], stderr=subprocess.STDOUT)
+            subprocess.check_output(["bluez-test-input", "disconnect", address], stderr=subprocess.STDOUT)
+        except:
+            pass
 
         if address is None:
             print "Non existant address"
             return
+
         self.receivesocket.connect((address, 0x13))
         self.controlsocket.connect((address, 0x11))
         if self.receivesocket and self.controlsocket:

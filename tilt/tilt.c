@@ -10,8 +10,10 @@
 #include "timer.h"
 #include "oc.h"
 #include "int.h"
-
 #include "uart.h"
+#include "i2c.h"
+#include "lcd.h"
+
 #include <stdio.h>
 
 #define cap(mn,x,mx) ((mx)<(x))?(mx):((mn)>(x))?(mn):(x)
@@ -30,20 +32,22 @@
 
 // Electromagnet control Pins
 #define ELECTRO_PIN &D[6]
-
-// Read Pins
-
 #define START_PIN &D[7]
-#define BALL_START_PIN &D[8]
-#define L_READ_PIN &D[9]
-#define R_READ_PIN &D[10]
-#define END_PIN &D[11]
-#define ELECTRO_READ_PIN &D[13]
+
+
+// LCD Pins
+#define LCD_SDA_PIN &D[8]
+#define LCD_SCL_PIN &D[9]
+
+#define BALL_START_PIN &D[10]
+#define L_READ_PIN &D[11]
+#define R_READ_PIN &D[12]
+#define END_PIN &D[13]
+
+
+#define ELECTRO_READ_PIN &A[1]
 
 #define C_READ_PIN &A[0]
-
-
-#define LIMIT_PIN 0
 
 enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 
@@ -116,14 +120,24 @@ void registerUSBEvents(){
 //INTERRUPT FUNCTIONS
 volatile bool coin = false;
 volatile bool endlimit = false;
+volatile bool timelimit = false;
 volatile bool player2ready = false;
 volatile bool ballinplace = false;
 volatile bool startgame_flag = false;
 
+int remaining_time = 0;
+
 void coin_inserted(){
-	//printf("COIN INSERTED!!\n");
-	coin = true;
-	led_toggle(&led3);
+	static bool first = true;
+	if(first){
+		first = false;
+		return;
+	}
+	if(!coin){
+		printf("COIN INSERTED : %d\n", coin);
+		coin = true;
+		led_toggle(&led3);
+	}
 }
 
 void end_reached(){
@@ -171,7 +185,7 @@ void electromag_ob(void){
 				electromag_counter_check = COOLDOWN_PER;
 				timer_start(&timer4);
 			}
-			else if(pin_read(ELECTRO_READ_PIN)){
+			else if(pin_read(ELECTRO_READ_PIN)>32768){
 				//Turn off electromagnet
 				timer_lower(&timer4);
 				timer_setPeriod(&timer4, ELECTRO_ON_PER);
@@ -185,7 +199,7 @@ void electromag_ob(void){
 		}
 		pin_write(ELECTRO_PIN,electromagnet_on);
 		led_write(&led1,electromagnet_on);
-		led_write(&led2,pin_read(ELECTRO_READ_PIN));
+		// led_write(&led2,pin_read(ELECTRO_READ_PIN));
 	}
 }
 
@@ -196,32 +210,45 @@ void do_obstacles(void){
 	electromag_ob();
 }
 
-
-
-
 void do_wii(void){
-	pin_write(X_SERVO_PIN, calc_servo_pos(s_x));
-	pin_write(Y_SERVO_PIN, calc_servo_pos(s_y)); //account for offset
+	pin_write(X_SERVO_PIN, calc_servo_pos(s_x+10));
+	pin_write(Y_SERVO_PIN, calc_servo_pos(s_y+2)); //account for offset
 }
 
 void print_lcd(char *stuff_to_display){
+	lcd_print(&lcd[0], stuff_to_display);
 }
 
 
 //State machine main functions
-void waitforcoin(void){
-	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
+
+void null_func(void){}
+
+typedef void (*f_ctor)(void);
+typedef char (*f_exec)(void);
+typedef void (*f_dtor)(void);
+
+typedef struct {
+	f_ctor ctor;
+	f_exec exec;
+	f_dtor dtor;
+} State;
+
+void print_coin_msg(void){
+	print_lcd((char*)"Please Insert Coin");
+}
+
+char waitforcoin(void){
+	if(timer_flag(&timer3)){
+	   	// Just Indicate Status 
 		timer_lower(&timer3);
 		// led_toggle(&led1);
 	}
-	if(coin){
-		state = SETUP_BOARD;
-		return;
-	}
+	return coin? SETUP_BOARD : WAIT_COIN;
 }
 
-void setup(void){
-	// ServiceUSB();
+
+char setup(void){
 	// Get angle from accelerometer
 	// If further than some threshold:
 	//    Move servos, keep track of PWM for it.
@@ -230,12 +257,10 @@ void setup(void){
 	//    set up servo with new 0.
 	do_balance();
 	startgame_flag = false;
-	state = WAIT_PLAYERS;
+	return WAIT_PLAYERS;
 }
 
-
-
-void wait_players(void){
+char wait_players(void){
 	startgame_flag = true;
 	if(timer_flag(&timer3)){ // check every .5 seconds, as setup initially
 		timer_lower(&timer3);
@@ -249,27 +274,48 @@ void wait_players(void){
 	}
 	// Check for player 2 ready
 	else if (!player2ready){
-		print_lcd("Player 2:  Press START button when ready.");
 		startgame_flag = false;
+		print_lcd("Player 2:  Press START button when ready.");
 	}
-
-	if (startgame_flag){
-		state = RUN;
-	}
+	return startgame_flag?RUN:WAIT_PLAYERS;
 }
 
-void run(void){
+void run_ctor(void){
+	remaining_time = 240;
+	timelimit = false;
+	endlimit = false;
+}
+
+char run(void){
 	do_obstacles(); // Handle player 2 stuff
 	do_wii(); // Handle player 1 balancing
 	//TODO : also account for time limit
-	if (endlimit == true){ //Actually going to be pin_get for limit switch pin or something.
-		state = END;
+	char s[32] = "Reach The Goal";
+	if(timer_flag(&timer3)){
+		timer_lower(&timer3);
+		sprintf(s,"Reach The Goal : %d", remaining_time/2);
+		print_lcd(s);
+		if(--remaining_time <= 0){ // = 30 sec.
+			timelimit = true;
+		}
 	}
+	return (endlimit || timelimit)? END : RUN;
 }
 
-void end(void){
+char end(void){
 	coin = false;
+	char s[32] = {};
+	sprintf(s, "Game Over : Player %d Wins!",endlimit?1:2);
+	print_lcd(s);
+	return END;
 }
+
+State s_wait_coin= {print_coin_msg,waitforcoin,null_func};
+State s_setup= {null_func,setup,null_func};
+State s_wait_players= {null_func,wait_players,null_func};
+State s_run={run_ctor,run,null_func};
+State s_end={null_func,end,null_func};
+State* states[] = {&s_wait_coin,&s_setup,&s_wait_players,&s_run,&s_end};
 
 int16_t main(void) {
 	init_clock();
@@ -279,17 +325,14 @@ int16_t main(void) {
 	init_oc();
 	init_spi();
 	init_timer();
+    timer_initDelayMicro(&timer5);
+	init_lcd();
 	init_uart();
 
+	int cnt = 0;
 
-	// _PIN *lin_acc_a = LIN_ACC_PINA;
-	// _PIN *lin_acc_b = LIN_ACC_PINB;
-
-	//_PIN *pot_read_1 = &A[0];
-	//_PIN *pot_read_2 = &A[1];
-
-	oc_servo(&oc2, X_SERVO_PIN, &timer1, 20e-3, 660e-6, 2300e-6, calc_servo_pos(0));
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc2, X_SERVO_PIN, &timer1, 20e-3, 660e-6, 2300e-6, calc_servo_pos(0));
 	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
@@ -308,15 +351,9 @@ int16_t main(void) {
 
 	pin_analogIn(C_READ_PIN);
 
-	// led_on(&led1);
-	// led_on(&led2);
-
-
+	led_on(&led1);
 	timer_setPeriod(&timer3, 0.5);
 	timer_start(&timer3);
-
-	timer_setPeriod(&timer4, 1);
-	timer_start(&timer4);
 
 	registerUSBEvents();
 
@@ -326,30 +363,41 @@ int16_t main(void) {
 	}
 
 	bool game_on = true;
-	state = SETUP_BOARD;
-	// int counter = 0;
+	//state = SETUP_BOARD;
+	unsigned char state_id = WAIT_COIN;
+	states[state_id]->ctor();
+
 	while(game_on){
 		ServiceUSB();
-		// printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
-		switch(state){
-			case WAIT_COIN:
-				waitforcoin();
-				break;
-			case SETUP_BOARD:
-				setup();
-				break;
-			case WAIT_PLAYERS:
-				wait_players();
-				break;
-			case RUN:
-				run();
-				break;
-			case END:
-				end();
-				break;
-			default:
-				break;
+// 
+// 		// printf("[%d : %d]\n", state, pin_read(L_READ_PIN));
+// 		switch(state){
+// 			case WAIT_COIN:
+// 				waitforcoin();
+// 				break;
+// 			case SETUP_BOARD:
+// 				setup();
+// 				break;
+// 			case WAIT_PLAYERS:
+// 				wait_players();
+// 				break;
+// 			case RUN:
+// 				run();
+// 				break;
+// 			case END:
+// 				end();
+// 				break;
+// 			default:
+// 				break;
 
+		// State* current_state = states[state_id];
+		// unsigned char next_state_id = current_state->exec();
+		unsigned char next_state_id = states[state_id]->exec();
+		if(next_state_id != state_id){ // == transition
+			states[state_id]->dtor();
+			state_id = next_state_id;
+			states[state_id]->ctor();
 		}
+		//printf("State : %d\n", next_state);
 	}
 }
