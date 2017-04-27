@@ -82,7 +82,8 @@ class BoardEvent:
         self.totalWeight = topLeft + topRight + bottomLeft + bottomRight
 
 class Wiiboard:
-    def __init__(self, processor, address=None):
+    def __init__(self, processor, address=None, disabled=False):
+        self.disabled = disabled
         # Sockets and status
         self.receivesocket = None
         self.controlsocket = None
@@ -109,7 +110,8 @@ class Wiiboard:
             raise Exception("Error: Bluetooth not found")
 
     def __enter__(self):
-        self.connect(self.address)
+        if not self.disabled:
+            self.connect(self.address)
         return self
 
     def __exit__(self, t,v,tb):
