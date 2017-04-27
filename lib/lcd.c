@@ -108,6 +108,7 @@ void init_lcd() {
     i2c_open(__lcd_i2c, 1e3); // freq = 1e3
 
 	lcd_init(&lcd[0], 0x07, 'A');
+	lcd_init(&lcd[1], 0x06, 'T'); // might need to change around with 0x0N
 
 
     //switch (initiator) {

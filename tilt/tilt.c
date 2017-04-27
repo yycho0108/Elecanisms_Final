@@ -44,7 +44,7 @@
 //Read if player 2 is ready
 #define R_START_PIN &D[10]
 
-// #define BALL_R_START_PIN &D[10]
+//#define BALL_R_START_PIN &D[10]
 #define R_L_SERVO_PIN &D[11]
 #define R_R_SERVO_PIN &D[12]
 #define R_END_PIN &D[13]
@@ -224,7 +224,51 @@ void electromag_ob(void){
 			break;
 		case EM_COOLDOWN:
 			if(electromag_counter > EM_COOLDOWN_PER){
+				timer_stop(&timer4);
 				electromagnet_state = EM_READY;
+			}
+			break;
+	}
+
+}
+
+enum {FLIP_READY, FLIP_ON, FLIP_COOLDOWN};
+volatile unsigned char flip_state = FLIP_READY;
+uint8_t flip_counter=0;
+#define FL_COOLDOWN_PER 16 // cooldown 4 sec.
+#define FL_ON_PER 8 // on for 4 sec.
+
+void do_ctrl_flip(void){
+	bool flip = pin_read(R_START_PIN);
+
+	if(timer_flag(&timer2)){
+		timer_lower(&timer2);
+		++flip_counter;
+	}
+
+	switch(flip_state){
+		case FLIP_READY:
+			if(flip){
+				printf("sfx:ctrl_flip\n");
+				flip_state = FLIP_ON;
+				timer_stop(&timer2);
+				timer_setPeriod(&timer2, 0.5);
+				timer_start(&timer2);
+				flip_counter = 0;
+			}
+			break;
+		case FLIP_ON:
+			if(flip_counter > FL_ON_PER){
+				flip_state = FLIP_COOLDOWN;
+				timer_stop(&timer2);
+				timer_start(&timer2);
+				flip_counter = 0; // reset counter
+			}
+			break;
+		case FLIP_COOLDOWN:
+			if(flip_counter > FL_COOLDOWN_PER){
+				flip_state = FLIP_READY;
+				timer_stop(&timer2);
 			}
 			break;
 	}
@@ -239,12 +283,13 @@ void do_obstacles(void){
 }
 
 void do_wii(void){
-	pin_write(W_X_SERVO_PIN, calc_servo_pos(s_x+10));
-	pin_write(W_Y_SERVO_PIN, calc_servo_pos(s_y+2)); //account for offset
+	pin_write(W_X_SERVO_PIN, calc_servo_pos(((flip_state == FLIP_ON)?-s_x:s_x)+10));
+	pin_write(W_Y_SERVO_PIN, calc_servo_pos(((flip_state == FLIP_ON)?-s_y:s_y)+2)); //account for offset
 }
 
 void print_lcd(char *stuff_to_display){
 	lcd_print(&lcd[0], stuff_to_display);
+	lcd_print(&lcd[1], stuff_to_display);
 }
 
 
@@ -308,7 +353,7 @@ char setup(void){
 }
 
 void wait_player_ctor(void){
-	print_lcd((char*)"Player 2:  Place ball at start and press START button when ready.");
+	print_lcd((char*)"Place Ball at Start; Press Start Button When Ready");
 
 	player2ready = false;
 	ballinplace = false;
@@ -329,7 +374,7 @@ char wait_players(void){
 	// Check for player 2 ready
 	if (!player2ready){
 		startgame_flag = false;
-		print_lcd((char*)"Player 2:  Place ball at start and press START button when ready.");
+		print_lcd((char*)"Place Ball, Press Button");
 	}
 	return startgame_flag?RUN:WAIT_PLAYERS;
 }
@@ -338,12 +383,13 @@ void run_ctor(void){
 	remaining_time = 240;
 	timelimit = false;
 	endlimit = false;
-	pin_write(W_B_SERVO_PIN, calc_servo_pos(90));
+	pin_write(W_B_SERVO_PIN, calc_servo_pos(-45));
 }
 
 char run(void){
 	do_obstacles(); // Handle player 2 stuff
 	do_wii(); // Handle player 1 balancing
+	do_ctrl_flip();
 	//TODO : also account for time limit
 	char s[32] = "Reach The Goal";
 	if(timer_flag(&timer3)){
@@ -397,7 +443,7 @@ int16_t main(void) {
 	oc_servo(&oc3, W_C_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc4, W_L_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc5, W_R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
-	//oc_servo(&oc6, W_B_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc6, W_B_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(R_COIN_PIN);
 	int_attach(&int1, R_COIN_PIN, INT_FALLING, &coin_inserted);
@@ -408,8 +454,8 @@ int16_t main(void) {
 
 	pin_digitalOut(W_ELECTRO_PIN);
 
-	// pin_digitalIn(BALL_R_START_PIN);
-	// int_attach(&int4, BALL_R_START_PIN, INT_FALLING, &ball_ready);
+	//pin_digitalIn(BALL_R_START_PIN);
+	//int_attach(&int4, BALL_R_START_PIN, INT_FALLING, &ball_ready);
 
 	pin_analogIn(R_ELECTRO_PIN);
 

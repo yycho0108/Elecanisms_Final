@@ -22,6 +22,11 @@ f_sound = pygame.mixer.Sound("sound/swing.wav")
 f_sound_length = f_sound.get_length()
 f_sound_last = 0
 
+
+c_sound = pygame.mixer.Sound("sound/confusion.wav")
+c_sound_length = f_sound.get_length()
+c_sound_last = 0
+
 def time_now():
     return time.time()
 
@@ -42,6 +47,10 @@ def read_cmd(ser):
                     if (now - f_sound_last) > f_sound_length:
                         f_sound.play()
                         f_sound_last = now
+                elif 'ctrl_flip' in sfx_type:
+                    if (now - c_sound_last) > c_sound_length:
+                        c_sound.play()
+                        c_sound_last = now
             else:
                 print cmd
         except Exception as e:
