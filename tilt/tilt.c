@@ -143,7 +143,7 @@ void coin_inserted(){
 	//}
 	if(!coin){
 		printf("sfx:coin\n");
-		printf("COIN INSERTED : %d\n", coin);
+		//printf("COIN INSERTED : %d\n", coin);
 		coin = true;
 		led_toggle(&led3);
 	}
