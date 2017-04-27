@@ -186,8 +186,8 @@ void flipper_ob(void){
 		printf("sfx:flipper\n");
 	}
 
-	pin_write(W_R_SERVO_PIN, calc_servo_pos(f_l*90));
-	pin_write(W_L_SERVO_PIN, calc_servo_pos((1 - f_r)*90));
+	pin_write(W_R_SERVO_PIN, calc_servo_pos(f_l*120 -45));
+	pin_write(W_L_SERVO_PIN, calc_servo_pos(f_r*-120 +45));
 }
 
 void electromag_ob(void){
@@ -383,7 +383,7 @@ void run_ctor(void){
 	remaining_time = 240;
 	timelimit = false;
 	endlimit = false;
-	pin_write(W_B_SERVO_PIN, calc_servo_pos(-45));
+	pin_write(W_B_SERVO_PIN, calc_servo_pos(-80));
 }
 
 char run(void){
