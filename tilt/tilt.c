@@ -30,15 +30,20 @@
 // center rotary wall
 #define C_SERVO_PIN &D[5]
 
+//Ball Release
+#define BALL_RELEASE_SERVO &D[7]
+
 // Electromagnet control Pins
 #define ELECTRO_PIN &D[6]
-#define START_PIN &D[7]
+
+//Read if player 2 is ready
+#define START_PIN &D[10]
 
 // LCD Pins
 #define LCD_SDA_PIN &D[8]
 #define LCD_SCL_PIN &D[9]
 
-#define BALL_START_PIN &D[10]
+// #define BALL_START_PIN &D[10]
 #define L_READ_PIN &D[11]
 #define R_READ_PIN &D[12]
 #define END_PIN &D[13]
@@ -280,6 +285,7 @@ void run_ctor(void){
 	remaining_time = 240;
 	timelimit = false;
 	endlimit = false;
+  pin_write(BALL_RELEASE_SERVO, calc_servo_pos(90));
 }
 
 char run(void){
@@ -303,6 +309,7 @@ char end(void){
 	char s[32] = {};
 	sprintf(s, "Game Over : Player %d Wins!",endlimit?1:2);
 	print_lcd(s);
+  pin_write(BALL_RELEASE_SERVO, calc_servo_pos(0));
 	//return END;
 	return WAIT_COIN;
 }
@@ -334,6 +341,7 @@ int16_t main(void) {
 	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc6, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
@@ -341,8 +349,8 @@ int16_t main(void) {
 	int_attach(&int2, END_PIN, INT_FALLING, &end_reached);
 	pin_digitalIn(START_PIN);
 	int_attach(&int3, START_PIN, INT_FALLING, &player_ready);
-	pin_digitalIn(BALL_START_PIN);
-	int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
+	// pin_digitalIn(BALL_START_PIN);
+	// int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
 
 	pin_analogIn(C_READ_PIN);
 	led_on(&led1);
