@@ -50,17 +50,14 @@ class EventProcessor:
                     self._sum += self._events[x]
                 self._weight = self._sum/WEIGHT_SAMPLES
                 self._measureCnt = 0
-                #print str(self._weight) + " kg"
                 tl,tr,bl,br = event.topLeft, event.topRight, event.bottomLeft, event.bottomRight
                 s = event.totalWeight 
                 tl,tr,bl,br = (w/s for w in (tl,tr,bl,br)) # normalize to a ratio
-                #print 'tl:{0:.2f};tr:{1:.2f};bl:{2:.2f};br:{3:.2f}'.format(tl,tr,bl,br)
                 t_max = np.deg2rad(15)
                 t_x = - np.arctan(((bl+br) - (tl+tr)) * np.tan(t_max)) # bottom - top, desired tilt pos about x axis
                 t_y = - np.arctan(((tr+br) - (tl+bl)) * np.tan(t_max)) # right - left, desired tilt pos about y axis
                 t_x, t_y = np.rad2deg(t_x), np.rad2deg(t_y)
                 self.t_x, self.t_y = t_x, t_y
-                #print '{0:.2f};{1:.2f}'.format(t_x, t_y) # computed tilt values
             if not self._measured:
                 self._measured = True
 
@@ -85,7 +82,8 @@ class BoardEvent:
         self.totalWeight = topLeft + topRight + bottomLeft + bottomRight
 
 class Wiiboard:
-    def __init__(self, processor, address=None):
+    def __init__(self, processor, address=None, disabled=False):
+        self.disabled = disabled
         # Sockets and status
         self.receivesocket = None
         self.controlsocket = None
@@ -112,7 +110,8 @@ class Wiiboard:
             raise Exception("Error: Bluetooth not found")
 
     def __enter__(self):
-        self.connect(self.address)
+        if not self.disabled:
+            self.connect(self.address)
         return self
 
     def __exit__(self, t,v,tb):
