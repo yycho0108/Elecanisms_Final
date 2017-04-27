@@ -260,6 +260,7 @@ void idle_ctor(void){
 char idle(void){
 	if(timer_flag(&timer3)){
 		timer_lower(&timer3);
+		led_toggle(&led3);
 		++delay_cnt;
 	}
 
@@ -275,7 +276,7 @@ char waitforcoin(void){
 	if(timer_flag(&timer3)){
 	   	// Just Indicate Status 
 		timer_lower(&timer3);
-		// led_toggle(&led1);
+		 led_toggle(&led1);
 	}
 	return coin? SETUP_BOARD : WAIT_COIN;
 }
