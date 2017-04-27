@@ -15,13 +15,22 @@ pygame.mixer.music.play(loops=-1, start=0.0)
 pygame.mixer.music.set_volume(1.0)
 
 e_sound = pygame.mixer.Sound("sound/electromagnet.wav")
+f_sound = pygame.mixer.Sound("sound/swing.mp3")
 
 
 def read_cmd(ser):
     while ser.isOpen():
         cmd = ser.readline()
-        if 'electromagnet' in cmd:
-            e_sound.play()
+        l = cmd.split(':')
+        if len(l) > 0 and l[0] == 'sfx':
+            sfx_type = l[1]
+            print sfx_type
+            if sfx_type is 'electromagnet':
+                e_sound.play()
+            elif sfx_type if 'flipper':
+                f_sound.play()
+        else:
+            print cmd
         time.sleep(0.04)
 
 def main():
@@ -53,11 +62,10 @@ def main():
         while True:
             if pic.connected:
                 t_x, t_y = processor.t_x, processor.t_y # tilt angles
-                #t_x, t_y = 0,10 # for testing
                 t_x, t_y = t_y, t_x # this is flipped due to servo position
                 s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
 
-                print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
+                #print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
                 if not (pic.write_x(s_x) and pic.write_y(s_y)):
                     pic.connected = False
             else:
