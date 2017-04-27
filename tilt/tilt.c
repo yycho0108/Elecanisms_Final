@@ -185,13 +185,14 @@ void electromag_ob(void){
 		//or for cooldown period to end
 		if (electromag_counter >= electromag_counter_check){
 			// Check if it's been enough seconds
-			electromag_counter = 0;
 			if (electromagnet_on){
 				timer_lower(&timer4);
+				electromag_counter = 0;
 				//Turn off the electromagnet, then start cooldown
 				electromagnet_on = false;
 				electromag_counter_check = COOLDOWN_PER;
 				timer_start(&timer4);
+
 			}
 			else if(pin_read(ELECTRO_READ_PIN)>32768){
 				//Turn off electromagnet
@@ -199,12 +200,14 @@ void electromag_ob(void){
 				electromag_counter_check = ELECTRO_ON_PER;
 				timer_start(&timer4);
 				electromagnet_on = true;
+				electromag_counter = 0;
 			}
 		}
 		else{
 			electromag_counter = electromag_counter+1;
 			timer_lower(&timer4);
 		}
+		
 		pin_write(ELECTRO_PIN,electromagnet_on);
 		led_write(&led1,electromagnet_on);
 		if(pin_read(ELECTRO_READ_PIN)>32768){
@@ -298,14 +301,14 @@ char wait_players(void){
 	}
 
 	// Check for ball in start
-	if (!ballinplace){
-		startgame_flag = false;
-		print_lcd((char*)"Place ball at start");
-	}
+	// if (!ballinplace){
+	// 	startgame_flag = false;
+	// 	print_lcd((char*)"Place ball at start");
+	// }
 	// Check for player 2 ready
-	else if (!player2ready){
+	if (!player2ready){
 		startgame_flag = false;
-		print_lcd((char*)"Player 2:  Press START button when ready.");
+		print_lcd((char*)"Player 2:  Place ball at start and press START button when ready.");
 	}
 	return startgame_flag?RUN:WAIT_PLAYERS;
 }
