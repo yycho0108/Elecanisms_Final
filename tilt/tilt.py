@@ -27,11 +27,15 @@ c_sound = pygame.mixer.Sound("sound/confusion.wav")
 c_sound_length = f_sound.get_length()
 c_sound_last = 0
 
+coin_sound = pygame.mixer.Sound("sound/coin.wav")
+coin_sound_length = f_sound.get_length()
+coin_sound_last = 0
+
 def time_now():
     return time.time()
 
 def read_cmd(ser):
-    global e_sound_last, f_sound_last
+    global e_sound_last, f_sound_last, c_sound_last, coin_sound_last
     while ser.isOpen():
         try:
             now = time_now()
@@ -51,6 +55,10 @@ def read_cmd(ser):
                     if (now - c_sound_last) > c_sound_length:
                         c_sound.play()
                         c_sound_last = now
+                elif 'coin' in sfx_type:
+                    if (now - coin_sound_last) > coin_sound_length:
+                        coin_sound.play()
+                        coin_sound_last = now
             else:
                 print cmd
         except Exception as e:
