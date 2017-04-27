@@ -430,7 +430,7 @@ int16_t main(void) {
 
 	bool game_on = true;
 	//state = SETUP_BOARD;
-	unsigned char state_id = WAIT_PLAYERS;
+	unsigned char state_id = IDLE;
 	states[state_id]->ctor();
 
 	while(game_on){
