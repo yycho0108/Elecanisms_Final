@@ -314,7 +314,7 @@ char end(void){
 	return WAIT_COIN;
 }
 
-State s_idle = {null_func,delay,null_func};
+State s_idle = {idle_ctor,idle,null_func};
 State s_wait_coin= {coin_ctor,waitforcoin,null_func};
 State s_setup= {null_func,setup,null_func};
 State s_wait_players= {null_func,wait_players,null_func};
@@ -334,6 +334,7 @@ int16_t main(void) {
 	init_lcd();
 	init_uart();
 
+	//printf("Init\n");
 	int cnt = 0;
 
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
@@ -381,6 +382,6 @@ int16_t main(void) {
 			state_id = next_state_id;
 			states[state_id]->ctor();
 		}
-		//printf("State : %d\n", next_state);
+		//printf("State : %d\n", next_state_id);
 	}
 }
