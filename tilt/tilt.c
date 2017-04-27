@@ -47,7 +47,7 @@
 
 #define C_READ_PIN &A[0]
 
-enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
+enum {IDLE, WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 
 #define true 1
 #define false 0
@@ -121,11 +121,12 @@ volatile bool startgame_flag = false;
 int remaining_time = 0;
 
 void coin_inserted(){
-	static bool first = true;
-	if(first){
-		first = false;
-		return;
-	}
+	//Hacky Soln.?
+	//static bool first = true;
+	//if(first){
+	//	first = false;
+	//	return;
+	//}
 	if(!coin){
 		printf("COIN INSERTED : %d\n", coin);
 		coin = true;
@@ -213,8 +214,24 @@ typedef struct {
 	f_dtor dtor;
 } State;
 
-void print_coin_msg(void){
+int delay_cnt;
+void idle_ctor(void){
+	delay_cnt = 0;
+	print_lcd((char*)"Staring Up...");
+}
+
+char idle(void){
+	if(timer_flag(&timer3)){
+		timer_lower(&timer3);
+		++delay_cnt;
+	}
+
+	return (delay_cnt > 4)? IDLE: WAIT_COIN; // delay 2 sec.
+}
+
+void coin_ctor(void){
 	print_lcd((char*)"Please Insert Coin");
+	coin = false;
 }
 
 char waitforcoin(void){
@@ -249,12 +266,12 @@ char wait_players(void){
 	// Check for ball in start
 	if (!ballinplace){
 		startgame_flag = false;
-		print_lcd("Place ball at start");
+		print_lcd((char*)"Place ball at start");
 	}
 	// Check for player 2 ready
 	else if (!player2ready){
 		startgame_flag = false;
-		print_lcd("Player 2:  Press START button when ready.");
+		print_lcd((char*)"Player 2:  Press START button when ready.");
 	}
 	return startgame_flag?RUN:WAIT_PLAYERS;
 }
@@ -286,10 +303,12 @@ char end(void){
 	char s[32] = {};
 	sprintf(s, "Game Over : Player %d Wins!",endlimit?1:2);
 	print_lcd(s);
-	return END;
+	//return END;
+	return WAIT_COIN;
 }
 
-State s_wait_coin= {print_coin_msg,waitforcoin,null_func};
+State s_idle = {null_func,delay,null_func};
+State s_wait_coin= {coin_ctor,waitforcoin,null_func};
 State s_setup= {null_func,setup,null_func};
 State s_wait_players= {null_func,wait_players,null_func};
 State s_run={run_ctor,run,null_func};
