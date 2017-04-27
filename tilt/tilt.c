@@ -30,16 +30,21 @@
 // center rotary wall
 #define C_SERVO_PIN &D[5]
 
+//Ball Release
+#define BALL_RELEASE_SERVO &D[7]
+
 // Electromagnet control Pins
 #define ELECTRO_PIN &D[6]
-#define START_PIN &D[7]
+
+//Read if player 2 is ready
+#define START_PIN &D[10]
 
 
 // LCD Pins
 #define LCD_SDA_PIN &D[8]
 #define LCD_SCL_PIN &D[9]
 
-#define BALL_START_PIN &D[10]
+// #define BALL_START_PIN &D[10]
 #define L_READ_PIN &D[11]
 #define R_READ_PIN &D[12]
 #define END_PIN &D[13]
@@ -49,7 +54,7 @@
 
 #define C_READ_PIN &A[0]
 
-enum {WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
+enum {IDLE, WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 
 #define true 1
 #define false 0
@@ -129,11 +134,12 @@ volatile bool startgame_flag = false;
 int remaining_time = 0;
 
 void coin_inserted(){
-	static bool first = true;
-	if(first){
-		first = false;
-		return;
-	}
+	//Hacky Soln.?
+	//static bool first = true;
+	//if(first){
+	//	first = false;
+	//	return;
+	//}
 	if(!coin){
 		printf("COIN INSERTED : %d\n", coin);
 		coin = true;
@@ -242,8 +248,24 @@ typedef struct {
 	f_dtor dtor;
 } State;
 
-void print_coin_msg(void){
+int delay_cnt;
+void idle_ctor(void){
+	delay_cnt = 0;
+	print_lcd((char*)"Staring Up...");
+}
+
+char idle(void){
+	if(timer_flag(&timer3)){
+		timer_lower(&timer3);
+		++delay_cnt;
+	}
+
+	return (delay_cnt > 4)? IDLE: WAIT_COIN; // delay 2 sec.
+}
+
+void coin_ctor(void){
 	print_lcd((char*)"Please Insert Coin");
+	coin = false;
 }
 
 char waitforcoin(void){
@@ -278,12 +300,12 @@ char wait_players(void){
 	// Check for ball in start
 	if (!ballinplace){
 		startgame_flag = false;
-		print_lcd("Place ball at start");
+		print_lcd((char*)"Place ball at start");
 	}
 	// Check for player 2 ready
 	else if (!player2ready){
 		startgame_flag = false;
-		print_lcd("Player 2:  Press START button when ready.");
+		print_lcd((char*)"Player 2:  Press START button when ready.");
 	}
 	return startgame_flag?RUN:WAIT_PLAYERS;
 }
@@ -292,6 +314,7 @@ void run_ctor(void){
 	remaining_time = 240;
 	timelimit = false;
 	endlimit = false;
+  pin_write(BALL_RELEASE_SERVO, calc_servo_pos(90));
 }
 
 char run(void){
@@ -315,10 +338,13 @@ char end(void){
 	char s[32] = {};
 	sprintf(s, "Game Over : Player %d Wins!",endlimit?1:2);
 	print_lcd(s);
-	return END;
+  pin_write(BALL_RELEASE_SERVO, calc_servo_pos(0));
+	//return END;
+	return WAIT_COIN;
 }
 
-State s_wait_coin= {print_coin_msg,waitforcoin,null_func};
+State s_idle = {idle_ctor,idle,null_func};
+State s_wait_coin= {coin_ctor,waitforcoin,null_func};
 State s_setup= {null_func,setup,null_func};
 State s_wait_players= {null_func,wait_players,null_func};
 State s_run={run_ctor,run,null_func};
@@ -337,6 +363,7 @@ int16_t main(void) {
 	init_lcd();
 	init_uart();
 
+	//printf("Init\n");
 	int cnt = 0;
 
 	oc_servo(&oc1, Y_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
@@ -344,6 +371,7 @@ int16_t main(void) {
 	oc_servo(&oc3, C_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc4, L_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 	oc_servo(&oc5, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
+	oc_servo(&oc6, R_SERVO_PIN, &timer1, 20e-3, 660e-6, 2340e-6, calc_servo_pos(0));
 
 	pin_digitalIn(COIN_PIN);
 	int_attach(&int1, COIN_PIN, INT_FALLING, &coin_inserted);
@@ -351,8 +379,8 @@ int16_t main(void) {
 	int_attach(&int2, END_PIN, INT_FALLING, &end_reached);
 	pin_digitalIn(START_PIN);
 	int_attach(&int3, START_PIN, INT_FALLING, &player_ready);
-	pin_digitalIn(BALL_START_PIN);
-	int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
+	// pin_digitalIn(BALL_START_PIN);
+	// int_attach(&int4, BALL_START_PIN, INT_FALLING, &ball_ready);
 
 
 	pin_digitalIn(ELECTRO_READ_PIN);
@@ -406,6 +434,6 @@ int16_t main(void) {
 			state_id = next_state_id;
 			states[state_id]->ctor();
 		}
-		//printf("State : %d\n", next_state);
+		//printf("State : %d\n", next_state_id);
 	}
 }
