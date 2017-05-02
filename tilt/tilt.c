@@ -91,7 +91,7 @@ uint8_t string[40];
 // USB-Related
 #define WRITE_X 1
 #define WRITE_Y 2
-#define TOGGLE_LED 3
+#define WRITE_IP 3
 
 volatile float s_x=0, s_y=0;
 
@@ -111,10 +111,14 @@ void write_y(){
 	BD[EP0IN].status = 0xC8;  
 }
 
-void toggle_led(){
-	led_toggle(&led2);
-	BD[EP0IN].bytecount = 0;         // set EP0 IN byte count to 1
-	BD[EP0IN].status = 0xC8;  
+void write_ip(){
+    uint8_t a = USB_setup.wIndex.b[0];
+    uint8_t b = USB_setup.wIndex.b[0];
+    uint8_t c = USB_setup.wValue.b[0];
+    uint8_t d = USB_setup.wValue.b[0];
+    char str[32] = {};
+    sprintf(str, "%u.%u.%u.%u", a,b,c,d);
+	print_lcd(str);
 }
 
 void registerUSBEvents(){

@@ -9,6 +9,7 @@ class PICInterface(object):
         self.WRITE_X = 1
         self.WRITE_Y = 2
         self.TOGGLE_LED = 3
+        self.WRITE_IP = 4
 
         # self.READ_ACC = 3 ...
 
@@ -61,4 +62,15 @@ class PICInterface(object):
         except usb.core.USBError as e:
             print e
             print "Could not send WRITE_Y vendor request."
+            return False
+
+    def write_ip(self, ip):
+        try:
+            ip = [int(x) for x in ip.split('.')]
+            ip_high = np.uint16(ip[0]*255 + ip[1])
+            ip_low = np.uint16(ip[2]*255 + ip[3])
+            self.dev.ctrl_transfer(0xC0, self.WRITE_IP, ip_high, ip_low, 0)
+            return True
+        except usb.core.USBError as e:
+            print "Could not send WRITE_IP vendor request."
             return False

@@ -3,6 +3,7 @@
 from wiiboard import Wiiboard, EventProcessor
 from pic_interface import PICInterface
 from get_angle import tilt2servo
+from get_ip import get_ip 
 
 import serial
 import time
@@ -66,6 +67,24 @@ def read_cmd(ser):
             pass
         time.sleep(0.04)
 
+def main_v2():
+    processor = EventProcessor()
+    pic = PICInterface()
+    board = Wiiboard(processor, disabled = False)
+
+    while True:
+         if pic.connected:
+               pic.write_cmd(get_ip('wlan0'))
+               if board.isConnected():
+                   pass
+           else:
+               pic.connect()
+               
+       while True:
+           if pic.connected:
+
+
+
 def main():
     processor = EventProcessor()
     with Wiiboard(processor, disabled=False) as board:
@@ -110,4 +129,4 @@ def main():
             pic.close()
 
 if __name__ == "__main__":
-    main()
+    main_v2()
