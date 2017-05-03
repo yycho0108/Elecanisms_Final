@@ -86,6 +86,8 @@ def read_cmd(ser):
 
 def main():
     processor = EventProcessor()
+    board = Wiiboard(processor, disabled = False)
+
     ## Communicate via UART - debugging
     with serial.Serial(
             port = '/dev/ttyUSB0',
@@ -98,36 +100,36 @@ def main():
         r_t.start()
 
         print 'connect with pic now!'
-
         pic = PICInterface()
         pic.write_ip(get_ip('wlan0'))
 
         print 'connect to wii board!'
-
-        with Wiiboard(processor, disabled=True) as board:
-            #print "Trying to connect..."
-            board.wait(200)
-
-            # Flash the LED so we know we can step on.
-            board.setLight(False)
-            board.wait(500)
-            board.setLight(True)
+        board.connect()
+        if board.isConnected():
             board.async_receive()
 
-            while True:
-                if pic.connected:
-                    t_x, t_y = processor.t_x, processor.t_y # tilt angles
-                    t_x, t_y = -t_y, t_x # this is flipped due to servo position
-                    s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
-                    wii = board.isConnected()
-                    if not (pic.write_x(s_x) and pic.write_y(s_y) and pic.write_wii(wii)):
-                        pic.connected = False
-                else:
-                    print 'pic not connected'
-                    pic.connect()
-                    pic.write_ip(get_ip('wlan0'))
+        while True:
+            if pic.connected:
+                t_x, t_y = processor.t_x, processor.t_y # tilt angles
+                t_x, t_y = -t_y, t_x # this is flipped due to servo position
+                s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
+                wii = board.isConnected()
+                if not (pic.write_x(s_x) and pic.write_y(s_y) and pic.write_wii(wii)):
+                    pic.connected = False
+                if not wii: # try to connect to wii again
+                    board.connect() # try connecting again
+                    if board.isConnected():
+                        board.setLight(False)
+                        board.wait(500)
+                        board.setLight(True)
+                        board.async_receive()
+                    
+            else:
+                print 'pic not connected'
+                pic.connect()
+                pic.write_ip(get_ip('wlan0'))
 
-                time.sleep(0.05)
+            time.sleep(0.05)
 
         pic.close()
 

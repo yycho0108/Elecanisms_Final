@@ -339,7 +339,6 @@ char idle(void){
 		++delay_cnt;
 	}
 
-	//print_lcd((char*)"IDLE");
 	lcd_set(&lcd[0], (char*)"Pleasae Connect Wii");
 	if(!wii_connected){
 		lcd_set(&lcd[1], ip_adr);
