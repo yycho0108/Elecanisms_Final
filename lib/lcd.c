@@ -52,6 +52,7 @@
 #define DR_READ 0x0B
 
 _LCD lcd[3];
+char lcd_msg[3][32] = {};
 
 _I2C *__lcd_i2c;
 
@@ -283,17 +284,15 @@ char str_eq(char* s1, char* s2, int n){
 	return 1;
 }
 
+void str_cpy(char* dst, char* src, int n){
+	uint8_t i;
+	for(i=0; i<n; ++i){
+		dst[i] = src[i];
+	}
+}
 void lcd_print(_LCD *self, char* msg) {
-	static char prev_msg[32] = {};
 	uint8_t i;
 	uint8_t n = str_len(msg);
-
-	if(str_eq(prev_msg,msg,n))
-		return;
-
-	for(i=0;i<n;++i){
-		prev_msg[i] = msg[i];
-	}
 
 	lcd_clear(self);
 
@@ -312,6 +311,19 @@ void lcd_print(_LCD *self, char* msg) {
 	msg2[16] = '\0';
 
 	lcd_print2(self, msg1, msg2);
+}
+
+void lcd_set(_LCD *self, char* msg){
+	int n = str_len(msg);
+	int i=0;
+	for(i=0; i<3; ++i){
+		if(&lcd[i] == self){
+			if(!str_eq(lcd_msg[i], msg, n)){
+				str_cpy(lcd_msg[i], msg, n);	
+				lcd_print(self, msg);
+			}
+		}
+	}
 }
 
 void lcd_broadcast(char* message) {

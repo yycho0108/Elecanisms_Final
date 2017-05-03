@@ -233,3 +233,4 @@ tags
 # End of https://www.gitignore.io/api/scons,python,c++,c,git,linux,vim,sublimetext
 
 *.lst
+.idea/

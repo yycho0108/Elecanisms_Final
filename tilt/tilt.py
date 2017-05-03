@@ -66,67 +66,73 @@ def read_cmd(ser):
             print e
             pass
         time.sleep(0.04)
+#
 
-def main_v2():
-    processor = EventProcessor()
-    pic = PICInterface()
-    board = Wiiboard(processor, disabled = False)
-
-    while True:
-         if pic.connected:
-               pic.write_cmd(get_ip('wlan0'))
-               if board.isConnected():
-                   pass
-           else:
-               pic.connect()
-               
-       while True:
-           if pic.connected:
+#def main_v2():
+#    processor = EventProcessor()
+#    pic = PICInterface()
+#    board = Wiiboard(processor, disabled = False)
+#    while True:
+#         if pic.connected:
+#               pic.write_ip(get_ip('wlan0'))
+#               if board.isConnected():
+#                   pass
+#           else:
+#               pic.connect()
+#       while True:
+#           if pic.connected:
 
 
 
 def main():
     processor = EventProcessor()
-    with Wiiboard(processor, disabled=False) as board:
-        #print "Trying to connect..."
-        board.wait(200)
+    ## Communicate via UART - debugging
+    with serial.Serial(
+            port = '/dev/ttyUSB0',
+            baudrate = 19200,
+            parity = serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=None) as ser:
+        r_t = threading.Thread(target = read_cmd, args=(ser,))
+        r_t.daemon = True
+        r_t.start()
 
-        # Flash the LED so we know we can step on.
-        board.setLight(False)
-        board.wait(500)
-        board.setLight(True)
-        board.async_receive()
+        print 'connect with pic now!'
 
-        ## Communicate via UART - debugging
-        with serial.Serial(
-                port = '/dev/ttyUSB0',
-                baudrate = 19200,
-                parity = serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                timeout=None) as ser:
-            r_t = threading.Thread(target = read_cmd, args=(ser,))
-            r_t.daemon = True
-            r_t.start()
+        pic = PICInterface()
+        pic.write_ip(get_ip('wlan0'))
 
-            print 'connect with pic now!'
-            pic = PICInterface()
+        print 'connect to wii board!'
+
+        with Wiiboard(processor, disabled=True) as board:
+            #print "Trying to connect..."
+            board.wait(200)
+
+            # Flash the LED so we know we can step on.
+            board.setLight(False)
+            board.wait(500)
+            board.setLight(True)
+            board.async_receive()
 
             while True:
                 if pic.connected:
                     t_x, t_y = processor.t_x, processor.t_y # tilt angles
                     t_x, t_y = -t_y, t_x # this is flipped due to servo position
                     s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
-
-                    #print 'writing tilt : ({0:.2f}, {1:.2f}); servo : ({2:.2f},{3:.2f})'.format(t_x, t_y, s_x, s_y)
-                    if not (pic.write_x(s_x) and pic.write_y(s_y)):
+                    wii = board.isConnected()
+                    if not (pic.write_x(s_x) and pic.write_y(s_y) and pic.write_wii(wii)):
                         pic.connected = False
                 else:
                     print 'pic not connected'
                     pic.connect()
+                    pic.write_ip(get_ip('wlan0'))
 
                 time.sleep(0.05)
 
-            pic.close()
+        pic.close()
+
+
+
 
 if __name__ == "__main__":
-    main_v2()
+    main()

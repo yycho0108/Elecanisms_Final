@@ -31,5 +31,6 @@ void lcd_cursor(_LCD *self, uint8_t cur);
 void lcd_print1(_LCD *self, char *str);
 void lcd_print2(_LCD *self, char* line1, char* line2);
 void lcd_print(_LCD *self, char* message);
+void lcd_set(_LCD *self, char* message);
 void lcd_broadcast(char* message);
 #endif

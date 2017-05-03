@@ -8,15 +8,14 @@ class PICInterface(object):
     def __init__(self):
         self.WRITE_X = 1
         self.WRITE_Y = 2
-        self.TOGGLE_LED = 3
-        self.WRITE_IP = 4
-
+        self.WRITE_IP = 3
+        self.WRITE_WII = 4
         # self.READ_ACC = 3 ...
 
         self.dev = usb.core.find(idVendor = 0x6666, idProduct = 0x0003)
         if self.dev is None:
             raise ValueError('no USB device found matching idVendor = 0x6666 and idProduct = 0x0003')
-        self.dev.set_configuration()
+        #self.dev.set_configuration()
 
         self.connected = True
 
@@ -34,12 +33,6 @@ class PICInterface(object):
         self.dev = None
         self.connected = False
 
-    def toggle_led(self):
-        try:
-            self.dev.ctrl_transfer(0x40, self.TOGGLE_LED1)
-        except usb.core.USBError:
-            print "Could not send TOGGLE_LED1 vendor request."
-
     def write_x(self, x):
         try:
             # x = -90 ~ 90
@@ -48,7 +41,8 @@ class PICInterface(object):
             x = np.uint16(x * 0xFFFF)
             self.dev.ctrl_transfer(0xC0, self.WRITE_X, 0, x, 0)
             return True
-        except usb.core.USBError as e:
+        except Exception as e:
+            print e
             print "Could not send WRITE_X vendor request."
             return False
 
@@ -59,7 +53,7 @@ class PICInterface(object):
             y = np.uint16(y * 0xFFFF)
             self.dev.ctrl_transfer(0xC0, self.WRITE_Y, 0, y, 0)
             return True
-        except usb.core.USBError as e:
+        except Exception as e:
             print e
             print "Could not send WRITE_Y vendor request."
             return False
@@ -67,10 +61,21 @@ class PICInterface(object):
     def write_ip(self, ip):
         try:
             ip = [int(x) for x in ip.split('.')]
-            ip_high = np.uint16(ip[0]*255 + ip[1])
-            ip_low = np.uint16(ip[2]*255 + ip[3])
+            ip_high = np.uint16(ip[0]*256 + ip[1])
+            ip_low = np.uint16(ip[2]*256 + ip[3])
             self.dev.ctrl_transfer(0xC0, self.WRITE_IP, ip_high, ip_low, 0)
             return True
-        except usb.core.USBError as e:
+        except Exception as e:
+            print e
             print "Could not send WRITE_IP vendor request."
+            return False
+
+    def write_wii(self, wii):
+        try:
+            wii = 0xFFFF if wii else 0x0000
+            self.dev.ctrl_transfer(0xC0, self.WRITE_WII, 0, wii, 0)
+            return True
+        except Exception as e:
+            print e
+            print "Could not send WRITE_WII vendor request."
             return False

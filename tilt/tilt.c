@@ -54,6 +54,11 @@
 // read electromagnet, treat it "like" a digital pin
 #define R_ELECTRO_PIN &A[1]
 
+void print_lcd(char *stuff_to_display){
+	lcd_set(&lcd[0], stuff_to_display);
+	lcd_set(&lcd[1], stuff_to_display);
+}
+
 // ======== PIN SETUP =========
 
 enum {IDLE, WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
@@ -61,7 +66,6 @@ enum {IDLE, WAIT_COIN, SETUP_BOARD, WAIT_PLAYERS, RUN, END};
 #define true 1
 #define false 0
 typedef unsigned char bool;
-
 
 uint8_t state = 0;
 
@@ -92,8 +96,11 @@ uint8_t string[40];
 #define WRITE_X 1
 #define WRITE_Y 2
 #define WRITE_IP 3
+#define WRITE_WII 4
 
-volatile float s_x=0, s_y=0;
+volatile float s_x = 0, s_y = 0;
+volatile bool wii_connected = false;
+char ip_adr[] = "---.---.---.---";
 
 void write_x(){
 	s_x = ((float)(USB_setup.wIndex.w)-0x7FFF)/0x7FFF; // -1 ~ 1
@@ -112,19 +119,28 @@ void write_y(){
 }
 
 void write_ip(){
-    uint8_t a = USB_setup.wIndex.b[0];
-    uint8_t b = USB_setup.wIndex.b[0];
-    uint8_t c = USB_setup.wValue.b[0];
-    uint8_t d = USB_setup.wValue.b[0];
-    char str[32] = {};
-    sprintf(str, "%u.%u.%u.%u", a,b,c,d);
-	print_lcd(str);
+    uint8_t a = USB_setup.wValue.b[1];
+    uint8_t b = USB_setup.wValue.b[0];
+    uint8_t c = USB_setup.wIndex.b[1];
+    uint8_t d = USB_setup.wIndex.b[0];
+    sprintf(ip_adr, "%u.%u.%u.%u", a,b,c,d);
+
+	BD[EP0IN].bytecount = 0;         // set EP0 IN byte count to 1
+	BD[EP0IN].status = 0xC8;  
+}
+
+void write_wii(){
+	wii_connected = (USB_setup.wIndex.w == 0xFFFF);
+
+	BD[EP0IN].bytecount = 0;         // set EP0 IN byte count to 1
+	BD[EP0IN].status = 0xC8;  
 }
 
 void registerUSBEvents(){
 	registerUSBEvent(write_x, WRITE_X);
 	registerUSBEvent(write_y, WRITE_Y);
-	registerUSBEvent(toggle_led, TOGGLE_LED);
+	registerUSBEvent(write_ip, WRITE_IP);
+	registerUSBEvent(write_wii, WRITE_WII);
 }
 
 
@@ -291,10 +307,6 @@ void do_wii(void){
 	pin_write(W_Y_SERVO_PIN, calc_servo_pos(((flip_state == FLIP_ON)?-s_y:s_y)+2)); //account for offset
 }
 
-void print_lcd(char *stuff_to_display){
-	lcd_print(&lcd[0], stuff_to_display);
-	lcd_print(&lcd[1], stuff_to_display);
-}
 
 
 //State machine main functions
@@ -312,10 +324,13 @@ typedef struct {
 } State;
 
 int delay_cnt;
+
 void idle_ctor(void){
 	delay_cnt = 0;
-	print_lcd((char*)"Staring Up...");
+	wii_connected = false;
+	print_lcd((char*)"Starting Up...");
 }
+
 
 char idle(void){
 	if(timer_flag(&timer3)){
@@ -324,7 +339,13 @@ char idle(void){
 		++delay_cnt;
 	}
 
-	return (delay_cnt > 4)? IDLE: WAIT_COIN; // delay 2 sec.
+	//print_lcd((char*)"IDLE");
+	lcd_set(&lcd[0], (char*)"Pleasae Connect Wii");
+	if(!wii_connected){
+		lcd_set(&lcd[1], ip_adr);
+	}
+
+	return ((delay_cnt > 4) && wii_connected)? WAIT_COIN: IDLE; // delay 2 sec.
 }
 
 void coin_ctor(void){
