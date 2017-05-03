@@ -39,12 +39,12 @@ def tilt2servo(phi, rad=True):
     return t
 
 if __name__ == "__main__":
+    print tilt2servo(-15.0, rad=False)
 
+    #print np.rad2deg(p_min) # max theoretical tilt
+    #print np.rad2deg(p_max) # max theoretical tilt
 
-    print np.rad2deg(p_min) # max theoretical tilt
-    print np.rad2deg(p_max) # max theoretical tilt
-
-    p = np.linspace(-p_min,p_max) # desired tilt angle
-    t = tilt2servo(p) # desired servo angle
-    plt.plot(p,t)
-    plt.show()
+    #p = np.linspace(-p_min,p_max) # desired tilt angle
+    #t = tilt2servo(p) # desired servo angle
+    #plt.plot(p,t)
+    #plt.show()

@@ -112,7 +112,9 @@ def main():
             if pic.connected:
                 t_x, t_y = processor.t_x, processor.t_y # tilt angles
                 t_x, t_y = -t_y, t_x # this is flipped due to servo position
-                s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
+                #s_x, s_y = tilt2servo(t_x, rad=False), tilt2servo(t_y, rad=False) # servo angles
+                s_x, s_y = 6 * t_x, 6 * t_y # 15 -> 90
+
                 wii = board.isConnected()
                 if not (pic.write_x(s_x) and pic.write_y(s_y) and pic.write_wii(wii)):
                     pic.connected = False

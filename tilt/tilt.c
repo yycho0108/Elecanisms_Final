@@ -206,12 +206,11 @@ void flipper_ob(void){
 		printf("sfx:flipper\n");
 	}
 
-	pin_write(W_R_SERVO_PIN, calc_servo_pos(f_l*120 -45));
-	pin_write(W_L_SERVO_PIN, calc_servo_pos(f_r*-120 +45));
+	pin_write(W_R_SERVO_PIN, calc_servo_pos(f_l*-90));
+	pin_write(W_L_SERVO_PIN, calc_servo_pos(f_r*90));
 }
 
 void electromag_ob(void){
-	unsigned char e = pin_read(R_ELECTRO_PIN);
 	bool em_pressed = pin_read(R_ELECTRO_PIN) > 32768;
 
 	led_write(&led1,em_pressed);
@@ -381,6 +380,7 @@ void wait_player_ctor(void){
 
 	player2ready = false;
 	ballinplace = false;
+	pin_write(W_B_SERVO_PIN, calc_servo_pos(0));
 }
 
 char wait_players(void){
@@ -407,6 +407,10 @@ void run_ctor(void){
 	remaining_time = 240;
 	timelimit = false;
 	endlimit = false;
+
+	flip_state = FLIP_COOLDOWN;
+	flip_counter = 0;
+
 	pin_write(W_B_SERVO_PIN, calc_servo_pos(-80));
 }
 
@@ -418,11 +422,18 @@ char run(void){
 	char s[32] = "Reach The Goal";
 	if(timer_flag(&timer3)){
 		timer_lower(&timer3);
-		sprintf(s,"Reach The Goal : %d", remaining_time/2);
-		print_lcd(s);
-		if(--remaining_time <= 0){ // = 30 sec.
+
+		if(remaining_time % 20 == 0){
+			//print every 10 sec.
+			sprintf(s,"Reach The Goal : %d", remaining_time/2);
+			print_lcd(s);
+		}
+
+		if(remaining_time <= 0){ // = 30 sec.
 			timelimit = true;
 		}
+
+		--remaining_time;
 	}
 	return (endlimit || timelimit)? END : RUN;
 }
@@ -436,6 +447,7 @@ char end(void){
 	print_lcd(s);
 
 	pin_write(W_B_SERVO_PIN, calc_servo_pos(0));
+	pin_write(W_ELECTRO_PIN, 0);
 	//return END;
 	return IDLE;
 }
