@@ -5,8 +5,8 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-<head profile="http://www.w3.org/2005/10/profile">
-    <title>Introduction</title>
+<head>
+    <title>Mechanical</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <!--[if lte IE 8]>
@@ -25,7 +25,6 @@
 </head>
 <body>
 
-<!-- Menu -->
 <div id="div-menu">
 </div>
 
@@ -34,7 +33,7 @@
 
     <!-- Header -->
     <!-- Note: The "styleN" class below should match that of the banner element. -->
-    <header id="header" class="alt style1">
+    <header id="header" class="alt style3">
         <a href="index.html" class="logo"><strong>Tilt Game</strong> <span> : Elecanisms</span></a>
         <nav>
             <a href="#menu">Menu</a>
@@ -42,31 +41,18 @@
     </header>
 
 
-    <!--<nav id="menu">
-        <ul class="links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="landing.html">Landing</a></li>
-            <li><a href="generic.html">Generic</a></li>
-            <li><a href="elements.html">Elements</a></li>
-        </ul>
-        <ul class="actions vertical">
-            <li><a href="#" class="button special fit">Get Started</a></li>
-            <li><a href="#" class="button fit">Log In</a></li>
-        </ul>
-    </nav>-->
-
     <!-- Banner -->
     <!-- Note: The "styleN" class below should match that of the header element. -->
-    <section id="banner" class="style1">
+    <section id="banner" class="style3">
         <div class="inner">
-            <span class="image">
-                <img src="images/TILT.png" alt=""/>
-            </span>
+							<span class="image">
+								<img src="images/pic07.jpg" alt=""/>
+							</span>
             <header class="major">
-                <h1>Introduction</h1>
+                <h1>Mechanical</h1>
             </header>
             <div class="content">
-                <p>Tilt Game : A competitive arcade game of maze traversal and dynamic obstacles</p>
+                <p>Structures and Mechanisms</p>
             </div>
         </div>
     </section>
@@ -78,18 +64,13 @@
         <section id="one">
             <div class="inner">
                 <header class="major">
-                    <h2>What is Tilt Game?</h2>
+                    <h2>General Overview</h2>
                 </header>
-                <p>
-                    Tile Game is a coin-operated 2-player competitive game called Tilt.
-                    The game is structured as a table-top tilting maze with both static and dynamic obstacles.
-                    Player 1 aims to guide a ball from the starting point to the end goal by shifting their weight on a
-                    Wii Fit board to tilt the board.
-                    Player 2 can rotate one of the walls of the game, activate flippers, or activate electromagnets
-                    under parts of the board to trap and block the ball.
-                    Player 1 wins if they manage to reach the end within two minutes; Player 2 wins if they prevent
-                    Player 1 from doing so.
-                </p>
+                <p>Our game has the general dimensions of 36” x 24” x 12”. The primary construction was ½” MDF and ⅛”
+                    hardboard. The tilting functionality of the game is acheived through 2 servos acting as linear
+                    actuators to control the X and Y axes. The center of the board is affixed to a larger U-Joint to
+                    constrain any rotation about the center. The servos connect to a linkage mounted 7-½” from the
+                    origin through a linkage and attach to the tilting surface via a ball joint. </p>
             </div>
         </section>
 
@@ -103,9 +84,22 @@
                 <div class="content">
                     <div class="inner">
                         <header class="major">
-                            <h3>Player 1</h3>
+                            <h3>Tilting Action</h3>
                         </header>
-                        <p>The objective of player 1 is to start from the beginning of the maze, and traverse through it to reach the goal area within the allotted time.</p>
+                        <p>
+                            Our original design featured exclusively ball joints but was found to be underconstrained.
+                            While we could achieve the desired tilting action, rotations of the surface was possible in
+                            any position. After attempting to implement custom made U-joints made in the a Autodesk
+                            Ember, a more robust solution was needed. We purchased a U-joint meant for automotive use to
+                            ensure that it would not be a weak link in our operation. <br/>
+
+                            With the origin of the board being the center point, the longer side was defined as the x
+                            axis while the shorter side was parallel to the y axis. We placed the servo mechanism At
+                            equal distances from the center on each axis. To get sufficient force out of our linear
+                            actuators, we first spec'd very large HS-805BB servos and gave them a moment arm of just 1
+                            ½”. This was enough mechanical advantage to both achieve the desired tilt angle and leave
+                            the servos plenty of mechanical overhead while tilting the platform to an acceptable
+                            angle.</p>
                         <ul class="actions">
                             <li><a href="generic.html" class="button">Learn more</a></li>
                         </ul>
@@ -120,9 +114,12 @@
                 <div class="content">
                     <div class="inner">
                         <header class="major">
-                            <h3>Player 2</h3>
+                            <h3>Game Area</h3>
                         </header>
-                        <p>The objective of player 2 is to control the dynamic obstacles on the maze in order to hinder player 1 from reaching the goal area.</p>
+                        <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus
+                            condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna
+                            pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et
+                            sagittis tempus.</p>
                         <ul class="actions">
                             <li><a href="generic.html" class="button">Learn more</a></li>
                         </ul>
@@ -176,7 +173,6 @@
 
     <!-- Footer -->
     <div id="div-footer"></div>
-
 
 </div>
 

@@ -17,20 +17,13 @@
     <!--[if lte IE 8]>
     <link rel="stylesheet" href="assets/css/ie8.css"/><![endif]-->
     <script src="assets/js/jquery.min.js"></script>
-    <script>
-        $(function () {
-            $.get("menu.html", function (data) {
-                $("#div-menu").replaceWith(data);
-            });
-        });
-    </script>
+    <script src="assets/js/load-div.js"></script>
     <link rel="icon"
           type="image/png"
           href="./images/icon.png">
 <body>
 <!-- Menu -->
-<div id="div-menu">
-</div>
+<div id="div-menu"></div>
 <!-- Wrapper -->
 <div id="wrapper">
 
@@ -89,7 +82,7 @@
                     <img src="images/pic03.jpg" alt=""/>
                 </span>
                 <header class="major">
-                    <h3><a href="landing.html" class="link">Mechanical</a></h3>
+                    <h3><a href="mechanical.html" class="link">Mechanical</a></h3>
 
                     <p>Structures and Mechanisms</p>
                 </header>
@@ -99,7 +92,7 @@
                     <img src="images/pic04.jpg" alt=""/>
                 </span>
                 <header class="major">
-                    <h3><a href="landing.html" class="link">Electrical</a></h3>
+                    <h3><a href="electrical.html" class="link">Electrical</a></h3>
 
                     <p>Circuits and Devices</p>
                 </header>
@@ -109,7 +102,7 @@
                     <img src="images/code.png" alt=""/>
                 </span>
                 <header class="major">
-                    <h3><a href="landing.html" class="link">Software</a></h3>
+                    <h3><a href="software.html" class="link">Software</a></h3>
 
                     <p>Game Logic and Code</p>
                 </header>
@@ -119,7 +112,7 @@
                     <img src="images/pic06.jpg" alt=""/>
                 </span>
                 <header class="major">
-                    <h3><a href="landing.html" class="link">Administrative</a></h3>
+                    <h3><a href="administrative.html" class="link">Administrative</a></h3>
 
                     <p>Organization and BoM</p>
                 </header>
@@ -132,10 +125,11 @@
                 <header class="major">
                     <h2>Our Team</h2>
                 </header>
-                <p>We're a group of students taking ENGR3110: Elecanisms at Olin College. <br>Curious about us? Click on the
+                <p>We're a group of students taking ENGR3110: Elecanisms at Olin College. <br>Curious about us? Click on
+                    the
                     link below!</p>
                 <ul class="actions">
-                    <li><a href="landing.html" class="button next">Meet the Team</a></li>
+                    <li><a href="team.html" class="button next">Meet the Team</a></li>
                 </ul>
             </div>
         </section>
@@ -143,75 +137,10 @@
     </div>
 
     <!-- Contact -->
-    <section id="contact">
-        <div class="inner">
-            <section>
-                <form method="post" action="#">
-                    <div class="field half first">
-                        <label for="name">Name</label>
-                        <input type="text" name="name" id="name"/>
-                    </div>
-                    <div class="field half">
-                        <label for="email">Email</label>
-                        <input type="text" name="email" id="email"/>
-                    </div>
-                    <div class="field">
-                        <label for="message">Message</label>
-                        <textarea name="message" id="message" rows="6"></textarea>
-                    </div>
-                    <ul class="actions">
-                        <li><input type="submit" value="Send Message" class="special"/></li>
-                        <li><input type="reset" value="Clear"/></li>
-                    </ul>
-                </form>
-            </section>
-            <section class="split">
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-envelope"></span>
-
-                        <h3>Email</h3>
-                        <a href="#">yoonyoung.cho@students.olin.edu</a>
-                    </div>
-                </section>
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-phone"></span>
-
-                        <h3>Phone</h3>
-                        <span>(000) 000-0000 x12387</span>
-                    </div>
-                </section>
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-home"></span>
-
-                        <h3>Address</h3>
-										<span>1000 Olin Way<br/>
-										Needham, MA 02492<br/>
-										United States of America</span>
-                    </div>
-                </section>
-            </section>
-        </div>
-    </section>
+    <div id="div-contact"></div>
 
     <!-- Footer -->
-    <footer id="footer">
-        <div class="inner">
-            <ul class="icons">
-                <li><a href="#" class="icon alt fa-twitter"><span class="label">Twitter</span></a></li>
-                <li><a href="#" class="icon alt fa-facebook"><span class="label">Facebook</span></a></li>
-                <li><a href="#" class="icon alt fa-instagram"><span class="label">Instagram</span></a></li>
-                <li><a href="#" class="icon alt fa-github"><span class="label">GitHub</span></a></li>
-                <li><a href="#" class="icon alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
-            </ul>
-            <ul class="copyright">
-                <li>&copy; Tilt Game</li>
-                <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
-            </ul>
-        </div>
-    </footer>
+    <div id="div-footer"></div>
 
 </div>
 

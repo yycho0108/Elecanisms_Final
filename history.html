@@ -17,13 +17,7 @@
     <!--[if lte IE 8]>
     <link rel="stylesheet" href="assets/css/ie8.css"/><![endif]-->
     <script src="assets/js/jquery.min.js"></script>
-    <script>
-        $(function () {
-            $.get("menu.html", function (data) {
-                $("#div-menu").replaceWith(data);
-            });
-        });
-    </script>
+    <script src="assets/js/load-div.js"></script>
     <link rel="icon"
           type="image/png"
           href="./images/icon.png">
@@ -90,12 +84,25 @@
                             <h3>Sprint 1</h3>
                         </header>
                         <p>
-                            (Reasonable Description Goes Here) <br>
+                            At the end of Sprint 1, we had a small-scale board designed and built. The aims of Sprint 1
+                            were to design and test our tilt mechanism, connect with the RasPi to communicate with the
+                            Wii balance board, and to make our initial electrical system to control the servos.<br/>
+
+                            Mechanically, the biggest insight of this sprint was with the ball joints used in mounting
+                            the tilting board to the base. We were using ball joints for all 3 connections, and this
+                            left an extra degree of freedom allowing the tilting board to spin rather than purely tilt.
+                            This made us realize we needed to use a U-joint in the center mount to prevent the rotation.
+
+                            Electrically, the challenge was to give the servos 5V, when the signal from the PIC was only
+                            3.3V. We developed the logic converters shown in the <a href="electrical.html">Electrical
+                            Design section</a> during this sprint.<br>
                             Click on the image to see the video!
                         </p>
                         <ul class="actions">
-                            <li><a href="https://docs.google.com/presentation/d/1kXGhg2GKAO5hiWGYh2b-NOa8COob8Jmc7-967gR5nwY/pub?start=false&loop=false&delayms=3000" class="button">
-                                Presentation</a>
+                            <li>
+                                <a href="https://docs.google.com/presentation/d/1kXGhg2GKAO5hiWGYh2b-NOa8COob8Jmc7-967gR5nwY/pub?start=false&loop=false&delayms=3000"
+                                   class="button">
+                                    Presentation</a>
                             </li>
                         </ul>
                     </div>
@@ -116,9 +123,11 @@
                             Unfortunately, we didn't have an integrated demo at the end of Sprint 2.
                         </p>
                         <ul class="actions">
-                            <li><a href="https://docs.google.com/presentation/d/1qgYyi9hcL1z0AkuM4F5c0pJOMGiAkC9d-Dtztp-kenc/pub?start=false&loop=false&delayms=3000" class="button">
-                                Presentation
-                            </a></li>
+                            <li>
+                                <a href="https://docs.google.com/presentation/d/1qgYyi9hcL1z0AkuM4F5c0pJOMGiAkC9d-Dtztp-kenc/pub?start=false&loop=false&delayms=3000"
+                                   class="button">
+                                    Presentation
+                                </a></li>
                         </ul>
                     </div>
                 </div>
@@ -184,76 +193,11 @@
 
     </div>
 
+
     <!-- Contact -->
-    <section id="contact">
-        <div class="inner">
-            <section>
-                <form method="post" action="#">
-                    <div class="field half first">
-                        <label for="name">Name</label>
-                        <input type="text" name="name" id="name"/>
-                    </div>
-                    <div class="field half">
-                        <label for="email">Email</label>
-                        <input type="text" name="email" id="email"/>
-                    </div>
-                    <div class="field">
-                        <label for="message">Message</label>
-                        <textarea name="message" id="message" rows="6"></textarea>
-                    </div>
-                    <ul class="actions">
-                        <li><input type="submit" value="Send Message" class="special"/></li>
-                        <li><input type="reset" value="Clear"/></li>
-                    </ul>
-                </form>
-            </section>
-            <section class="split">
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-envelope"></span>
-
-                        <h3>Email</h3>
-                        <a href="#">information@untitled.tld</a>
-                    </div>
-                </section>
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-phone"></span>
-
-                        <h3>Phone</h3>
-                        <span>(000) 000-0000 x12387</span>
-                    </div>
-                </section>
-                <section>
-                    <div class="contact-method">
-                        <span class="icon alt fa-home"></span>
-
-                        <h3>Address</h3>
-										<span>1234 Somewhere Road #5432<br/>
-										Nashville, TN 00000<br/>
-										United States of America</span>
-                    </div>
-                </section>
-            </section>
-        </div>
-    </section>
-
+    <div id="div-contact"></div>
     <!-- Footer -->
-    <footer id="footer">
-        <div class="inner">
-            <ul class="icons">
-                <li><a href="#" class="icon alt fa-twitter"><span class="label">Twitter</span></a></li>
-                <li><a href="#" class="icon alt fa-facebook"><span class="label">Facebook</span></a></li>
-                <li><a href="#" class="icon alt fa-instagram"><span class="label">Instagram</span></a></li>
-                <li><a href="#" class="icon alt fa-github"><span class="label">GitHub</span></a></li>
-                <li><a href="#" class="icon alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
-            </ul>
-            <ul class="copyright">
-                <li>&copy; Untitled</li>
-                <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
-            </ul>
-        </div>
-    </footer>
+    <div id="div-footer"></div>
 
 </div>
 
