@@ -83,20 +83,23 @@
                         <header class="major">
                             <h3>Sprint 1</h3>
                         </header>
+
+                        <i class="fa fa-hand-o-left"></i> Click on the image to see the video!<br/>
+
                         <p>
-                            At the end of Sprint 1, we had a small-scale board designed and built. The aims of Sprint 1
-                            were to design and test our tilt mechanism, connect with the RasPi to communicate with the
-                            Wii balance board, and to make our initial electrical system to control the servos.<br/>
+                            At the end of Sprint 1, we had a <strong>small-scale board</strong> designed and built. The
+                            aims of Sprint 1 were to, connect with the <strong>RasPi</strong> to communicate with the
+                            <strong>Wii balance board</strong>, and to design and test our <strong>initial mechatronic
+                            system</strong> for the tilt mechanism.<br/>
 
                             Mechanically, the biggest insight of this sprint was with the ball joints used in mounting
                             the tilting board to the base. We were using ball joints for all 3 connections, and this
                             left an extra degree of freedom allowing the tilting board to spin rather than purely tilt.
-                            This made us realize we needed to use a U-joint in the center mount to prevent the rotation.
+                            This made us realize we needed to use a U-joint in the center mount to prevent the rotation.<br/>
 
                             Electrically, the challenge was to give the servos 5V, when the signal from the PIC was only
                             3.3V. We developed the logic converters shown in the <a href="electrical.html">Electrical
                             Design section</a> during this sprint.<br>
-                            <i class="fa fa-hand-o-left"></i> Click on the image to see the video!
                         </p>
                         <ul class="actions">
                             <li>
@@ -112,22 +115,32 @@
                 <a href="#" class="image">
                     <img src="images/sprint_2.jpg" alt="" data-position="top center"/>
                 </a>
+<<<<<<< HEAD
+=======
+
+>>>>>>> b816aacff76003248b9511b6eaa66baf0ed569c2
                 <div class="content">
                     <div class="inner">
                         <header class="major">
                             <h3>Sprint 2</h3>
                         </header>
                         <p>
-                            Sprint 2 was a lot of experimentation and growth.  By the end of this sprint, we had defined our MVP, built a full-scale model of the game, and had tested several actuation and data collection methods.
-                            <br><br/>
-                            Mechanically speaking, we built the first full iteration of the box. We used a ShopBot to make the necessary panels, but needed to make most of our mounting holes by hand to accommodate our changing design.We developed the concept of a central maze and spinner obstacle, and had the flippers and electromagnets mounted.
-                            <br><br/>
-                            Electrically, not much progress was made.  We weren’t doing anything particularly new that required electrical redesign.
-                            <br><br/>
-                            Software wise, we could control flippers and the central spinner, had a preliminary state machine set up, and had gotten the coin mechanism working.  There was a lot of work done on trying to control a linear actuator - the idea was to use this to control an active element, but after a week of struggling, this work was put on hold.  We also wanted to use an accelerometer to calibrate the tilt response of the board.  We modified the mpu library available, but determined at the end of the sprint that we needed to focus our time on the MVP rather than cool sensors that would only marginally improve the gameplay, and the accelerometer was tabled.
-                            <br><br/>
+                            Sprint 2 was a lot of experimentation and growth. By the end of this sprint, we had <strong>defined
+                            our MVP</strong>, built a <strong>full-scale model</strong> of the game, and had tested
+                            several <strong>actuation and data collection</strong> methods.
+                            <br/>
+                            During the sprint, we Shopbotted our first life-sized hull; due to
+                            lack of foresight and changing designs, the panels had to be postprocessed nonetheless to
+                            accomodate our central maze and the spinner.
+                            <br/>
+                            We also implemented our initial layout of the FSM, with which we could control flippers and
+                            the central spinner. We also had the coin mechanism working, and mostly accomplished lots of
+                            tasks in the way. A lot of work was spent on debugging; the linear actuator was
+                            malfunctioning, for instance, as well as the accelerometer library. After a period of
+                            efforts in vain, we prioritized on the integrated product, so both of these efforts were
+                            tabled.
+                            <br/>
                             Overall, we determined our MVP and were well on our way to making a complete game.
-
                         </p>
                         <a href="#" class="image">
                             <img src="images/sprint_2.jpg" alt="" data-position="bottom center"/>
@@ -144,7 +157,7 @@
             </section>
             <section>
                 <a href="https://youtu.be/WhGn2kGZT2E" class="image">
-                    <img src="images/pic10.jpg" alt="" data-position="25% 25%"/>
+                    <img src="images/TILT.png" alt="" data-position="25% 25%"/>
                 </a>
 
                 <div class="content">
@@ -152,34 +165,41 @@
                         <header class="major">
                             <h3>Sprint 3</h3>
                         </header>
-                        <p>This sprint marked our Minimum Viable Game. Mechanically, we successfully made the game
+                        <i class="fa fa-hand-o-left"></i> Click on the image to see the video!
+                        <p>This sprint marked our Minimum Viable Game.<br/>
+                            <strong>Mechanically</strong>, we successfully made the game
                             robust with a U-joint designed for a car steering rack. This prevented twisting and made it
                             substantially less likely that an errant 4th grader would damage the system. We additionally
                             solved our issues with the center spinner clearance that we were having in Sprint 2 by
                             increasing the gap between the walls to allow the ball to easily travel between them,
                             lengthening the connection to prevent interference between the walls and the game surface,
                             and integrating the blocking outcrop into our 3D printed part, rather than having a wood
-                            flap that fell off during testing.
-                            Electrically, we wired improved the strength of the electromagnets by using a boost
+                            flap that fell off during testing.<br/>
+                            <strong>Electrically</strong>, we wired improved the strength of the electromagnets by using
+                            a boost
                             converter to step up the 12V power supply potential to 30V. However, we were actuating this
                             signal directly with a simple push-button. Moving forward, we would need to use mosfets to
                             electronically control the actuation of the electromagnets This allowed us to design the
                             electrical system, even without being integrated in the code yet. We tested the pop bumper,
                             so that we could integrate it in the next sprint, and wired up buttons for control as well,
-                            and started planning for moving our circuit to proto-boards.
-                            For software, we updated the state machine to be easily extensible (this turned out to be
+                            and started planning for moving our circuit to proto-boards.<br/>
+                            For <strong>Software</strong>, we updated the state machine to be easily extensible (this
+                            turned out to be
                             extremely helpful later on), and had all the game logic and active element control
                             implemented and tested. This was also the sprint where we got the LCD screen with
                             instructions working.</p>
+
                         <ul class="actions">
-                            <li><a href="generic.html" class="button">Presentation</a></li>
+                            <li>
+                                <a href="https://docs.google.com/presentation/d/1mzTZv0zzdHe3pZVo-A_SYEKUm4-SnUeJv9-iEqhFLlc/pub?start=false&loop=false&delayms=3000"
+                                   class="button">Presentation</a></li>
                         </ul>
                     </div>
                 </div>
             </section>
             <section>
-                <a href="generic.html" class="image">
-                    <img src="images/pic10.jpg" alt="" data-position="25% 25%"/>
+                <a href="https://www.youtube.com/watch?v=TpH-vJhE-Eo" class="image">
+                    <img src="images/steven.jpeg" alt="" data-position="25% 25%"/>
                 </a>
 
                 <div class="content">
@@ -187,17 +207,26 @@
                         <header class="major">
                             <h3>Sprint 4</h3>
                         </header>
-                        <p>The final 2 weeks of our project were mostly dedicated to polish and robustness. We improved
+                        <i class="fa fa-hand-o-right"></i> Click on the image to see the video!
+                        <p>The final 2 weeks of our project were mostly dedicated to <strong>polish</strong> and
+                            <strong>robustness</strong>. We improved
                             electrical connections, worked out software bugs, recut panels, painted the the game, and
                             more. We took all the design insight we had learned prior and cut an entire set on new body
                             panels out of MDF. We chose MDF over plywood this time around as it was less subject to warp
-                            (our 1st game area was a little askew). The hardboard maze was designed to slot directly
-                            into the game surface as a press fit rather than needing to be fastened down by screws, as
-                            was the case with the first design. Lastly, a coat of black paint was applied to all the
-                            exposed surfaces and a layer of while vinyl was used to cover the countersunk screws holding
-                            in various components into the game area.</p>
+                            (our 1st game area was a little askew).<br/>
+                            The hardboard maze was designed to slot directly into the game surface as a press fit rather
+                            than needing to be fastened down by screws, as was the case with the first design. Lastly, a
+                            coat of black paint was applied to all the exposed surfaces and a layer of while vinyl was
+                            used to cover the countersunk screws holding in various components into the game area.<br/>
+                            When we revisited the Raspberry Pi, it unexpectedly broke down, so we had to reconfigure
+                            another one. A lot of effort was put into making the startup sequence, as well as the
+                            following execution sequence, robust and reliable, so that the game would be a <strong>plug-and-play
+                                experience</strong>.
+                        </p>
                         <ul class="actions">
-                            <li><a href="generic.html" class="button">Presentation</a></li>
+                            <li>
+                                <a href="https://docs.google.com/presentation/d/1JFkQt9QzkqDWi8kbdn1lHUk-Bvq8gb218LwOOvb3oVI/pub?start=false&loop=false&delayms=3000"
+                                   class="button">Presentation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -208,15 +237,12 @@
         <section id="three">
             <div class="inner">
                 <header class="major">
-                    <h2>Massa libero</h2>
+                    <h2>Final Game</h2>
                 </header>
-                <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. Mauris aliquet magna magna
-                    sed nunc rhoncus pharetra. Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas
-                    laoreet massa vel lacinia pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat
-                    tincidunt. Vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus amet pharetra et
-                    feugiat tempus.</p>
+                <p>After all these sprints, we finally arrived at our final product! Click on the link to get started on
+                    the systems overview, starting from mechanical.</p>
                 <ul class="actions">
-                    <li><a href="generic.html" class="button next">Get Started</a></li>
+                    <li><a href="mechanical.html" class="button next">Get Started</a></li>
                 </ul>
             </div>
         </section>
