@@ -5,158 +5,178 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>Electrical</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-		<script src="assets/js/jquery.min.js"></script>
+<head>
+    <title>Electrical</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <!--[if lte IE 8]>
+    <script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="assets/css/main.css"/>
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="assets/css/ie9.css"/><![endif]-->
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="assets/css/ie8.css"/><![endif]-->
+    <script src="assets/js/jquery.min.js"></script>
 
-		<script src="assets/js/load-div.js"></script>
-		<link rel="icon"
-			  type="image/png"
-			  href="./images/icon.png">
-	</head>
-	<body>
-	<div id="div-menu">
-	</div>
+    <script src="assets/js/load-div.js"></script>
+    <link rel="icon"
+          type="image/png"
+          href="./images/icon.png">
+</head>
+<body>
+<div id="div-menu">
+</div>
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+<!-- Wrapper -->
+<div id="wrapper">
 
-				<!-- Header -->
-				<!-- Note: The "styleN" class below should match that of the banner element. -->
-				<header id="header" class="alt style4">
-					<a href="index.html" class="logo"><strong>Tilt Game</strong> <span> : Elecanisms</span></a>
-					<nav>
-						<a href="#menu">Menu</a>
-					</nav>
-				</header>
+    <!-- Header -->
+    <!-- Note: The "styleN" class below should match that of the banner element. -->
+    <header id="header" class="alt style4">
+        <a href="index.html" class="logo"><strong>Tilt Game</strong> <span> : Elecanisms</span></a>
+        <nav>
+            <a href="#menu">Menu</a>
+        </nav>
+    </header>
 
 
-				<!-- Banner -->
-				<!-- Note: The "styleN" class below should match that of the header element. -->
-					<section id="banner" class="style4">
-						<div class="inner">
+    <!-- Banner -->
+    <!-- Note: The "styleN" class below should match that of the header element. -->
+    <section id="banner" class="style4">
+        <div class="inner">
 							<span class="image">
-								<img src="images/pic07.jpg" alt="" />
+								<img src="images/pic07.jpg" alt=""/>
 							</span>
-							<header class="major">
-								<h1><i class="fa fa-bolt"></i> Electrical</h1>
-							</header>
-							<div class="content">
-								<p>Circuits and Devices</p>
-							</div>
-						</div>
-					</section>
+            <header class="major">
+                <h1><i class="fa fa-bolt"></i> Electrical</h1>
+            </header>
+            <div class="content">
+                <p>Circuits and Devices</p>
+            </div>
+        </div>
+    </section>
 
-				<!-- Main -->
-					<div id="main">
+    <!-- Main -->
+    <div id="main">
 
-						<!-- One -->
-							<section id="one">
-								<div class="inner">
-									<header class="major">
-										<h2>Components</h2>
-									</header>
-									<p> The project incorporates a total of 6 servos, 1 coin acceptor, 1 pop bumper, 3 electromagnets, 4 control buttons, 1 slide potentiometer (0-1 kOhm), two 16x2 LCD displays, and two controllers: a Pic24 board and a Raspberry Pi. In addition, two patches of copper tape - one connected to ground and a digital signal pin and the other to a 3.3 V power supply - are arranged such that when the ball touches both at the same time, a HIGH signal is sent to the digital input. The servos are each connected to a digital output pin in the Pic24 board (logic conversion explained later). The coin acceptor and 4 control buttons as well as a switch at the end goal of the game serve as digital inputs into the pic board, while the potentiometer serves as an analogue input.
-<br><br>The pop bumper functions independent of the control boards: when the ball hits the pop bumper, it connects a switch that allows a potential difference of 12 V across a solenoid and a 5 V potential difference across an LED.
-									</p>
-								</div>
-							</section>
+        <!-- One -->
+        <section id="one">
+            <div class="inner">
+                <header class="major">
+                    <h2>Overview</h2>
+                </header>
+                <p> The project incorporates a total of 6 servos, 1 coin acceptor, 1 pop bumper, 3 electromagnets, 4
+                    control buttons, 1 slide potentiometer (0-1 kOhm), two 16x2 LCD displays, and two controllers: a
+                    Pic24 board and a Raspberry Pi. In addition, two patches of copper tape - one connected to ground
+                    and a digital signal pin and the other to a 3.3 V power supply - are arranged such that when the
+                    ball touches both at the same time, a HIGH signal is sent to the digital input. The servos are each
+                    connected to a digital output pin in the Pic24 board (logic conversion explained later). The coin
+                    acceptor and 4 control buttons as well as a switch at the end goal of the game serve as digital
+                    inputs into the pic board, while the potentiometer serves as an analogue input.
+                    <br><br>The pop bumper functions independent of the control boards: when the ball hits the pop
+                    bumper, it connects a switch that allows a potential difference of 12 V across a solenoid and a 5 V
+                    potential difference across an LED.
+                </p>
+            </div>
+        </section>
 
-						<!-- Two -->
-							<section id="two" class="spotlights">
-								<section>
-									<a href="generic.html" class="image">
-										<img src="images/protoboard design.jpg" alt="" data-position="center center" />
-									</a>
-									<div class="content">
-										<div class="inner">
-											<header class="major">
-												<h3>Voltage Supplies and Signal</h3>
-											</header>
-											<p>We used an ATX power supply which can provide 3.3 V, 5V, and 12 V to power up all the electronic components of our game. The servos, the Pic24 board, the Raspberry Pi board, and LCDs are all connected to a 5 V output. However, since the digital signals from the pic controller have a high signal at 3.3 V, we use quadruple 2-input positive-or gates (SN74act32) to make the amplitude conversion between the pic24 board signal and the servos. The coin acceptor and pop bumper are connected to the 12 V output, while the slide potentiometer and the signal end of the coin acceptor are tied to 3.3 V. The electromagnets themselves each need 30 V to induce a strong enough magnetic field so a boost converter is used to step up the 12 V DC voltage from the ATX power supply to 30 V.
+        <!-- Two -->
+        <section id="two" class="spotlights">
+            <section>
+                <a href="generic.html" class="image">
+                    <img src="images/protoboard design.jpg" alt="" data-position="center center"/>
+                </a>
 
-<br><br>A N-channel 30 V 22 mΩ logic level MOSFET is used to controll the electromagets by taking an analog signal from the pic board to turn on the magnets for the desired amount of time. All components share the ground rail connected to the ATX power supply. To insure that only DC voltage is applied across each component, a 3.3 μF capacitor was placed across each higher voltage ( 3.3 V, 5 V, 12 V) rail and ground. This grounds higher frequency signals and noise.
+                <div class="content">
+                    <div class="inner">
+                        <header class="major">
+                            <h3>Voltage Supplies and Signal</h3>
+                        </header>
+                        <p>We used an ATX power supply which can provide 3.3 V, 5V, and 12 V to power up all the
+                            electronic components of our game. The servos, the Pic24 board, the Raspberry Pi board, and
+                            LCDs are all connected to a 5 V output. However, since the digital signals from the pic
+                            controller have a high signal at 3.3 V, we use quadruple 2-input positive-or gates
+                            (SN74act32) to make the amplitude conversion between the pic24 board signal and the servos.
+                            The coin acceptor and pop bumper are connected to the 12 V output, while the slide
+                            potentiometer and the signal end of the coin acceptor are tied to 3.3 V. The electromagnets
+                            themselves each need 30 V to induce a strong enough magnetic field so a boost converter is
+                            used to step up the 12 V DC voltage from the ATX power supply to 30 V.
 
-											</p>
-											<ul class="actions">
-												<li><a href="generic.html" class="button">Learn more</a></li>
-											</ul>
-										</div>
-									</div>
-								</section>
-								<section>
-									<a href="generic.html" class="image">
-										<img src="images/Final Schematic.PNG" alt="" data-position="bottom center" />
-									</a>
-									<div class="content">
-										<div class="inner">
-											<header class="major">
-												<h3> Circuit Design</h3>
-											</header>
-											<p>For the first three sprints of the project, we used a breadboard to integrate
-												the electrical components as the project was still evolving. Leading upto the
-												last sprint, we organized the circuit layout and soldered the components (or
-												their corresponding pins) onto a protoboard resembling the circuit layout of a
-												 breadboard. We used two protoboards - one containing the components and pins
-												 that need 5 V inputs and another containing 12 V and 30 V rails. For consistency
-												 all the connections leading to external elements to the board like the controllers,
-												  servos, etc. were all soldered as male pins on the protoboard. </p>
-											<ul class="actions">
-												<li><a href="generic.html" class="button">Learn more</a></li>
-											</ul>
-										</div>
-									</div>
-								</section>
-								<section>
-									<a href="generic.html" class="image">
-										<img src="images/breadboard_protoboard.jpg" alt="" data-position="top center" />
-									</a>
-									<div class="content">
-										<div class="inner">
-											<header class="major">
-												<h3> Circuit Packaging and Organization </h3>
-											</header>
-											<p> We aimed to make an electrically robust product and easily debuggable. The connections
-													 between the protoboard and the external electrical components were made by
-													 crimping female connectors to color coded wires (red: 5 V, black: ground; yellow:
-														digital output from Pic24 board and signal to servos; white/blue: digital and analog
-														 inputs). The wires leading to the same components, then, were braided with a drill to
-															avoid cluttering the protoboard area.
-													<br><br>While the electromagnets were still connected through the breadboard, they drew
-													too much current and caused the breadboard to heat and occasionally malfunction. This is
-													no longer a problem after the higher voltage 12 V and 30 V components were soldered onto
-													a separate protoboard.  </p>
-											<ul class="actions">
-												<li><a href="generic.html" class="button">Learn more</a></li>
-											</ul>
-										</div>
-									</div>
-								</section>
+                            <br><br>A N-channel 30 V 22 mΩ logic level MOSFET is used to controll the electromagets by
+                            taking an analog signal from the pic board to turn on the magnets for the desired amount of
+                            time. All components share the ground rail connected to the ATX power supply. To insure that
+                            only DC voltage is applied across each component, a 3.3 μF capacitor was placed across each
+                            higher voltage ( 3.3 V, 5 V, 12 V) rail and ground. This grounds higher frequency signals
+                            and noise.
 
-					</div>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <a href="generic.html" class="image">
+                    <img src="images/Final Schematic.PNG" alt="" data-position="bottom center"/>
+                </a>
 
-				<!-- Contact -->
-				<div id="div-contact"></div>
+                <div class="content">
+                    <div class="inner">
+                        <header class="major">
+                            <h3> Circuit Design</h3>
+                        </header>
+                        <p>For the first three sprints of the project, we used a breadboard to integrate
+                            the electrical components as the project was still evolving. Leading upto the
+                            last sprint, we organized the circuit layout and soldered the components (or
+                            their corresponding pins) onto a protoboard resembling the circuit layout of a
+                            breadboard. We used two protoboards - one containing the components and pins
+                            that need 5 V inputs and another containing 12 V and 30 V rails. For consistency
+                            all the connections leading to external elements to the board like the controllers,
+                            servos, etc. were all soldered as male pins on the protoboard. </p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <a href="generic.html" class="image">
+                    <img src="images/breadboard_protoboard.jpg" alt="" data-position="top center"/>
+                </a>
 
-				<!-- Footer -->
-				<div id="div-footer"></div>
+                <div class="content">
+                    <div class="inner">
+                        <header class="major">
+                            <h3> Circuit Packaging and Organization </h3>
+                        </header>
+                        <p> We aimed to make an electrically robust product and easily debuggable. The connections
+                            between the protoboard and the external electrical components were made by
+                            crimping female connectors to color coded wires (red: 5 V, black: ground; yellow:
+                            digital output from Pic24 board and signal to servos; white/blue: digital and analog
+                            inputs). The wires leading to the same components, then, were braided with a drill to
+                            avoid cluttering the protoboard area.
+                            <br><br>While the electromagnets were still connected through the breadboard, they drew
+                            too much current and caused the breadboard to heat and occasionally malfunction. This is
+                            no longer a problem after the higher voltage 12 V and 30 V components were soldered onto
+                            a separate protoboard. </p>
+                    </div>
+                </div>
+            </section>
+
+    </div>
+
+    <!-- Contact -->
+    <div id="div-contact"></div>
+
+    <!-- Footer -->
+    <div id="div-footer"></div>
 
 
-			</div>
+</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-			<script src="assets/js/main.js"></script>
+<!-- Scripts -->
+<script src="assets/js/jquery.scrolly.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/skel.min.js"></script>
+<script src="assets/js/util.js"></script>
+<!--[if lte IE 8]>
+<script src="assets/js/ie/respond.min.js"></script><![endif]-->
+<script src="assets/js/main.js"></script>
 
-	</body>
+</body>
 </html>
