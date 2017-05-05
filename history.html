@@ -112,6 +112,9 @@
                 <a href="#" class="image">
                     <img src="images/sprint_2.jpg" alt="" data-position="top center"/>
                 </a>
+                <a href="#" class="image">
+                    <img src="images/sprint_2.jpg" alt="" data-position="top center"/>
+                </a>
 
                 <div class="content">
                     <div class="inner">
@@ -119,39 +122,16 @@
                             <h3>Sprint 2</h3>
                         </header>
                         <p>
-                            Sprint 2 marked the first attempt to build a full scale iteration of our game. We had
-                            settled on dimensions and purchased a 4x8 sheet of plywood to shopbot all the panels.
-                            Admittedly, we had limited foresight to the exact gameplay in the game area at the time of
-                            shopbotting. Because of this a lot of holes for elements has to be manually drilled in after
-                            the fact.
+                            Sprint 2 was a lot of experimentation and growth.  By the end of this sprint, we had defined our MVP, built a full-scale model of the game, and had tested several actuation and data collection methods.
+                            <br><br/>
+                            Mechanically speaking, we built the first full iteration of the box. We used a ShopBot to make the necessary panels, but needed to make most of our mounting holes by hand to accommodate our changing design.We developed the concept of a central maze and spinner obstacle, and had the flippers and electromagnets mounted.
+                            <br><br/>
+                            Electrically, not much progress was made.  We weren’t doing anything particularly new that required electrical redesign.
+                            <br><br/>
+                            Software wise, we could control flippers and the central spinner, had a preliminary state machine set up, and had gotten the coin mechanism working.  There was a lot of work done on trying to control a linear actuator - the idea was to use this to control an active element, but after a week of struggling, this work was put on hold.  We also wanted to use an accelerometer to calibrate the tilt response of the board.  We modified the mpu library available, but determined at the end of the sprint that we needed to focus our time on the MVP rather than cool sensors that would only marginally improve the gameplay, and the accelerometer was tabled.
+                            <br><br/>
+                            Overall, we determined our MVP and were well on our way to making a complete game.
 
-                            The end result wasn't very pretty, but our game layout was starting to take shape! It was at
-                            this time that we started to come up with the central maze and spinner concept. It didn't
-                            work perfectly, but we had a playable game and fast approaching our MVP. We had the coin
-                            mechanism, flippers, central spinner, and electromagnets working to varying degrees using a
-                            breadboard to connect everything. This was the last sprint where we were still attempting to
-                            use Hunter’s SLA printed u-joint design. It was through it’s use in a full scale build that
-                            we determined that they were not robust enough. In software and electrical, the coin
-                            mechanism was successfully communicating with the board, and had preliminary state machine
-                            structure set up for the game.
-                            This was, unfortunately, a sprint where we did a lot of work that didn’t end up in the final
-                            game. We spent a significant amount of this sprint working on getting linear actuators and
-                            accelerometers working. We were struggling to effectively control the linear actuators
-                            available, finding that rather than moving smoothly, they would jitter about a seemingly
-                            random position. After this sprint was over, we determined that it would be a better use of
-                            our time to find different active elements that didn’t require linear actuators.
-                            The accelerometer was intended to solve the problems that we were having with the board
-                            being more difficult to tilt in one direction than the opposite. We spent the sprint
-                            modifying an existing library to convert the data that the accelerometer was getting to
-                            useful angles for us. We also spent time converting the library to interface with C
-                            functions rather than python functions, but were still struggling at the end of the sprint.
-                            Unfortunately, this work was put to the side and not picked up again, when we realized that
-                            the accelerometer was unnecessary for our MVP, and would be detrimental to our work towards
-                            getting to a working system.
-                            Overall, the biggest thing we got out of Sprint 2 was a defined MVP. We spent time after our
-                            sprint review identifying the necessary features and components to get a game that would
-                            work and that we could be proud of, and adjusted what each of us were working on to get to
-                            that MVP, while fulfilling each of our learning goals.
                         </p>
                         <ul class="actions">
                             <li>
