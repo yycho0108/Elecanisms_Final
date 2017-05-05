@@ -72,7 +72,8 @@
                     obstacle actuators and other sensors. The Raspberry Pi is mostly acting as a peripheral unit that
                     acts as a Driver for Sound Effects and Bluetooth Wii-Board.</p>
 
-                <a href="http://github.com/yycho0108/Elecanisms_Final">View our code Here! <i class="fa fa-github"></i> </a>
+                <a href="http://github.com/yycho0108/Elecanisms_Final">View our code Here! <i class="fa fa-github"></i>
+                </a>
             </div>
         </section>
 
@@ -101,62 +102,121 @@
                 </div>
             </section>
             <section>
-                <a href="generic.html" class="image">
-                    <img src="images/pic09.jpg" alt="" data-position="top center"/>
-                </a>
+                <!--<a href="generic.html" class="image">
+                    <img src="images/elecanisms_dataflow.svg" alt="" data-position="top center"/>
+                </a>-->
 
-                <div class="content">
+                <div style="padding: 2em 3em 0.1em 3em ;">
                     <div class="inner">
                         <header class="major">
-                            <h3>Communication</h3>
+                            <h3>FSM Workflow</h3>
                         </header>
-                        <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus
-                            condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna
-                            pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et
-                            sagittis tempus.</p>
-                        <ul class="actions">
-                            <li><a href="generic.html" class="button">Learn more</a></li>
-                        </ul>
+                        <h4>Idle</h4>
+
+                        <p>When the game first turns on, it connects to the Rasberry Pi. And runs the basic permanent
+                            setup
+                            code, such as interrupts and servos. At this point, it waits for the Wii Balance Board to be
+                            connected, and indicates the instructions on the display screen accordingly. Once all of the
+                            connections have been established and verified, it stays idle until a coin is inserted.</p>
+
+                        <h4>Setup</h4>
+
+                        <p>
+                            Immediately after the coin is inserted, the code runs all of the transient setup code, such
+                            as
+                            initializing the variables to expected values. It puts the tilt angle at a neutral position,
+                            and
+                            closes the ball-release to house the ball until both players are ready.</p>
+
+                        <h4>Wait Player</h4>
+
+                        <p>
+                            The game then moves into the state waiting for the Player to be ready. In this state, the
+                            game
+                            instructs Player 2 to press the start button, then waits for the start interrupt to be
+                            triggered
+                            by the start button, then continues to the Run state.</p>
+
+                        <h4>Run</h4>
+
+                        <p>This could be said to be the "main" state. In this state, the PIC handles the obstacle
+                            controls from Player 2, while also communicating with the Rasberry Pi to get tilt data from
+                            the
+                            Wii Balance Board and keeping track of the time left in the game.<br/>
+                            The obstacle management varies in complexity depending on the obstacle. The center spinner
+                            just
+                            takes analog data from the linear potentiometer, and feeds it directly to the servo
+                            controller
+                            to determine the angle. The flippers check to see if each flipper button is pressed, and if
+                            they
+                            are, sets the servo to the “high” angle, and if not, sets them to the low angle. The
+                            trickiest
+                            part in this is making sure that the servo turns the correct directions.<br/>
+                            The most challenging obstacles to manage were the electromagnet and the control flip. This
+                            is
+                            due to the fact that these obstacles were timed, and the times for cooldown and active
+                            states
+                            were different. We used a state machine combined with a timer and a counter keeping track of
+                            how
+                            many times the timer flag raised to keep track of the time and the state.
+                        </p>
+
+                        <h4>End</h4>
+                        <p>This is the final state, where the outcome of the game is determined. If the ball reached the
+                        goal before the timeout, Player 1 wins; otherwise, Player 2 wins. At any rate, there is only one
+                        victor. After a brief moment of congratulating the winner, the game would loop back into idle
+                        mode</p>
+
                     </div>
                 </div>
             </section>
             <section>
-                <a href="generic.html" class="image">
-                    <img src="images/pic10.jpg" alt="" data-position="25% 25%"/>
-                </a>
+                <!--<a href="generic.html" class="image">
+                    <img src="images/elecanisms_dataflow.svg" alt="" data-position="top center"/>
+                </a>-->
 
-                <div class="content">
+                <div style="padding: 2em 3em 0.1em 3em ;">
                     <div class="inner">
                         <header class="major">
-                            <h3>Sed nunc ligula</h3>
+                            <h3>Communication</h3>
                         </header>
-                        <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus
-                            condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna
-                            pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et
-                            sagittis tempus.</p>
-                        <ul class="actions">
-                            <li><a href="generic.html" class="button">Learn more</a></li>
-                        </ul>
+                        <h4>Bluetooth</h4>
+
+                        <p>
+                            We collect weight ratio information from the Wii balance board in order to control the tilt
+                            board. Permanently pairing with the Wii balance board turned out to be a greater challenge
+                            than we had initially thought; this feature was unreliable and only supported for certain
+                            versions of PyBluez(4.99), with a backend Bluez only for Raspbian Wheezy. Because robustness
+                            was our priority, we maintained that at the start of each game the board would be re-paired
+                            with the Pi.</p>
+                        <h4>USB</h4>
+
+                        <p>
+                            We use our USB line to primarily transmit information from the Pi to the PIC24, mainly
+                            information regarding the tilt angles, board connectivity status, and the IP address for
+                            debugging purposes. Initially, we were concerned about the speed of transmission, but it
+                            turned out to be fast enough for our purposes.
+                        </p>
+                        <h4>UART</h4>
+
+                        <p>
+                            Because the PIC is a peripheral device, it cannot initiate a connection with the Raspberry
+                            Pi. In order to send signals to the Pi, we use the UART communication with a specifically
+                            formatted message. This feature is mainly used for triggering sound effects, as well as
+                            logging debug information so that the stored log could be examined later.
+                        </p>
+                        <h4>I2C</h4>
+
+                        <p>
+                            In order to communicate with the LCD Display without taking up too much of the pin's
+                            bandwidth, we have (scavenged from previous years) an I2C adapter that not only allows for
+                            communication with just two digital pins, but with multiple devices at the same time. We
+                            also use status messages sparingly, because displaying can take up too much bandwidth,
+                            introducing jitter in the servos as a result thereof.
+                        </p>
                     </div>
                 </div>
             </section>
-        </section>
-
-        <!-- Three -->
-        <section id="three">
-            <div class="inner">
-                <header class="major">
-                    <h2>Massa libero</h2>
-                </header>
-                <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. Mauris aliquet magna magna
-                    sed nunc rhoncus pharetra. Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas
-                    laoreet massa vel lacinia pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat
-                    tincidunt. Vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus amet pharetra et
-                    feugiat tempus.</p>
-                <ul class="actions">
-                    <li><a href="generic.html" class="button next">Get Started</a></li>
-                </ul>
-            </div>
         </section>
 
     </div>
