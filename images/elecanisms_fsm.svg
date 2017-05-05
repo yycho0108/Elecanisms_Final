@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="600" height="420" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="240.5" cy="211.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="217.5" y="217.5" font-family="Verdana" font-size="16">Setup</text>
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="344.5" cy="211.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="318.5" y="217.5" font-family="Verdana" font-size="16">Player</text>
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="449.5" cy="211.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="432.5" y="217.5" font-family="Verdana" font-size="16">Run</text>
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="530.5" cy="117.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="510.5" y="123.5" font-family="Verdana" font-size="16">End&#8321;</text>
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="524.5" cy="307.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="504.5" y="313.5" font-family="Verdana" font-size="16">End&#8322;</text>
+	<ellipse stroke="white" stroke-width="1" fill="none" cx="135.5" cy="211.5" rx="30" ry="30"/>
+	<text fill="#FFFFFF" x="119.5" y="217.5" font-family="Verdana" font-size="16">Idle</text>
+	<polygon stroke="white" stroke-width="1" points="270.5,211.5 314.5,211.5"/>
+	<polygon fill="white" stroke-width="1" points="314.5,211.5 306.5,206.5 306.5,216.5"/>
+	<text fill="#FFFFFF" x="273.5" y="232.5" font-family="Verdana" font-size="16">done</text>
+	<path stroke="white" stroke-width="1" fill="none" d="M 227.275,184.703 A 22.5,22.5 0 1 1 253.725,184.703"/>
+	<polygon fill="white" stroke-width="1" points="253.725,184.703 262.473,181.17 254.382,175.292"/>
+	<path stroke="white" stroke-width="1" fill="none" d="M 331.275,184.703 A 22.5,22.5 0 1 1 357.725,184.703"/>
+	<polygon fill="white" stroke-width="1" points="357.725,184.703 366.473,181.17 358.382,175.292"/>
+	<polygon stroke="white" stroke-width="1" points="374.5,211.5 419.5,211.5"/>
+	<polygon fill="white" stroke-width="1" points="419.5,211.5 411.5,206.5 411.5,216.5"/>
+	<text fill="#FFFFFF" x="374.5" y="232.5" font-family="Verdana" font-size="16">ready</text>
+	<path stroke="white" stroke-width="1" fill="none" d="M 456.833,182.506 A 109.868,109.868 0 0 1 502.908,129.036"/>
+	<polygon fill="white" stroke-width="1" points="502.908,129.036 493.477,128.79 498.554,137.406"/>
+	<text fill="#FFFFFF" x="434.5" y="143.5" font-family="Verdana" font-size="16">time</text>
+	<path stroke="white" stroke-width="1" fill="none" d="M 497.581,294.475 A 108.679,108.679 0 0 1 455.625,240.771"/>
+	<polygon fill="white" stroke-width="1" points="497.581,294.475 493.704,285.874 488.151,294.191"/>
+	<text fill="#FFFFFF" x="432.5" y="291.5" font-family="Verdana" font-size="16">goal</text>
+	<path stroke="white" stroke-width="1" fill="none" d="M 476.297,198.275 A 22.5,22.5 0 1 1 476.297,224.725"/>
+	<polygon fill="white" stroke-width="1" points="476.297,224.725 479.83,233.473 485.708,225.382"/>
+	<polygon stroke="white" stroke-width="1" points="165.5,211.5 210.5,211.5"/>
+	<polygon fill="white" stroke-width="1" points="210.5,211.5 202.5,206.5 202.5,216.5"/>
+	<text fill="#FFFFFF" x="170.5" y="232.5" font-family="Verdana" font-size="16">coin</text>
+	<path stroke="white" stroke-width="1" fill="none" d="M 152.254,186.631 A 283.786,283.786 0 0 1 504.34,102.844"/>
+	<polygon fill="white" stroke-width="1" points="152.254,186.631 161.062,183.251 153.075,177.233"/>
+	<path stroke="white" stroke-width="1" fill="none" d="M 497.427,320.396 A 298.148,298.148 0 0 1 153.465,235.511"/>
+	<polygon fill="white" stroke-width="1" points="153.465,235.511 154.725,244.86 162.421,238.474"/>
+</svg>
+
