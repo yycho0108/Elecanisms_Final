@@ -96,7 +96,7 @@
                             Electrically, the challenge was to give the servos 5V, when the signal from the PIC was only
                             3.3V. We developed the logic converters shown in the <a href="electrical.html">Electrical
                             Design section</a> during this sprint.<br>
-                            Click on the image to see the video!
+                            <i class="fa fa-hand-o-left"></i> Click on the image to see the video!
                         </p>
                         <ul class="actions">
                             <li>
@@ -119,8 +119,39 @@
                             <h3>Sprint 2</h3>
                         </header>
                         <p>
-                            (Reasonable Description Goes Here) <br>
-                            Unfortunately, we didn't have an integrated demo at the end of Sprint 2.
+                            Sprint 2 marked the first attempt to build a full scale iteration of our game. We had
+                            settled on dimensions and purchased a 4x8 sheet of plywood to shopbot all the panels.
+                            Admittedly, we had limited foresight to the exact gameplay in the game area at the time of
+                            shopbotting. Because of this a lot of holes for elements has to be manually drilled in after
+                            the fact.
+
+                            The end result wasn't very pretty, but our game layout was starting to take shape! It was at
+                            this time that we started to come up with the central maze and spinner concept. It didn't
+                            work perfectly, but we had a playable game and fast approaching our MVP. We had the coin
+                            mechanism, flippers, central spinner, and electromagnets working to varying degrees using a
+                            breadboard to connect everything. This was the last sprint where we were still attempting to
+                            use Hunter’s SLA printed u-joint design. It was through it’s use in a full scale build that
+                            we determined that they were not robust enough. In software and electrical, the coin
+                            mechanism was successfully communicating with the board, and had preliminary state machine
+                            structure set up for the game.
+                            This was, unfortunately, a sprint where we did a lot of work that didn’t end up in the final
+                            game. We spent a significant amount of this sprint working on getting linear actuators and
+                            accelerometers working. We were struggling to effectively control the linear actuators
+                            available, finding that rather than moving smoothly, they would jitter about a seemingly
+                            random position. After this sprint was over, we determined that it would be a better use of
+                            our time to find different active elements that didn’t require linear actuators.
+                            The accelerometer was intended to solve the problems that we were having with the board
+                            being more difficult to tilt in one direction than the opposite. We spent the sprint
+                            modifying an existing library to convert the data that the accelerometer was getting to
+                            useful angles for us. We also spent time converting the library to interface with C
+                            functions rather than python functions, but were still struggling at the end of the sprint.
+                            Unfortunately, this work was put to the side and not picked up again, when we realized that
+                            the accelerometer was unnecessary for our MVP, and would be detrimental to our work towards
+                            getting to a working system.
+                            Overall, the biggest thing we got out of Sprint 2 was a defined MVP. We spent time after our
+                            sprint review identifying the necessary features and components to get a game that would
+                            work and that we could be proud of, and adjusted what each of us were working on to get to
+                            that MVP, while fulfilling each of our learning goals.
                         </p>
                         <ul class="actions">
                             <li>
@@ -142,12 +173,27 @@
                         <header class="major">
                             <h3>Sprint 3</h3>
                         </header>
-                        <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus
-                            condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna
-                            pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et
-                            sagittis tempus.</p>
+                        <p>This sprint marked our Minimum Viable Game. Mechanically, we successfully made the game
+                            robust with a U-joint designed for a car steering rack. This prevented twisting and made it
+                            substantially less likely that an errant 4th grader would damage the system. We additionally
+                            solved our issues with the center spinner clearance that we were having in Sprint 2 by
+                            increasing the gap between the walls to allow the ball to easily travel between them,
+                            lengthening the connection to prevent interference between the walls and the game surface,
+                            and integrating the blocking outcrop into our 3D printed part, rather than having a wood
+                            flap that fell off during testing.
+                            Electrically, we wired improved the strength of the electromagnets by using a boost
+                            converter to step up the 12V power supply potential to 30V. However, we were actuating this
+                            signal directly with a simple push-button. Moving forward, we would need to use mosfets to
+                            electronically control the actuation of the electromagnets This allowed us to design the
+                            electrical system, even without being integrated in the code yet. We tested the pop bumper,
+                            so that we could integrate it in the next sprint, and wired up buttons for control as well,
+                            and started planning for moving our circuit to proto-boards.
+                            For software, we updated the state machine to be easily extensible (this turned out to be
+                            extremely helpful later on), and had all the game logic and active element control
+                            implemented and tested. This was also the sprint where we got the LCD screen with
+                            instructions working.</p>
                         <ul class="actions">
-                            <li><a href="generic.html" class="button">Learn more</a></li>
+                            <li><a href="generic.html" class="button">Presentation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -162,12 +208,17 @@
                         <header class="major">
                             <h3>Sprint 4</h3>
                         </header>
-                        <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus
-                            condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna
-                            pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et
-                            sagittis tempus.</p>
+                        <p>The final 2 weeks of our project were mostly dedicated to polish and robustness. We improved
+                            electrical connections, worked out software bugs, recut panels, painted the the game, and
+                            more. We took all the design insight we had learned prior and cut an entire set on new body
+                            panels out of MDF. We chose MDF over plywood this time around as it was less subject to warp
+                            (our 1st game area was a little askew). The hardboard maze was designed to slot directly
+                            into the game surface as a press fit rather than needing to be fastened down by screws, as
+                            was the case with the first design. Lastly, a coat of black paint was applied to all the
+                            exposed surfaces and a layer of while vinyl was used to cover the countersunk screws holding
+                            in various components into the game area.</p>
                         <ul class="actions">
-                            <li><a href="generic.html" class="button">Learn more</a></li>
+                            <li><a href="generic.html" class="button">Presentation</a></li>
                         </ul>
                     </div>
                 </div>
